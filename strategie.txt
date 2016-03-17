@@ -1,12 +1,30 @@
 Partie shell :
 
+-Afficher une "simili" ligne relative à l'utilisateur et au fichier dans lequel il se trouve
+-Découper la commande saisie par l'utilisateur à l'aide d'un automate à états finis
+-Faire la liaison entre les méthodes et les mots découpés de l'automate
 
+Exemple de méthode après vérification par l'automate :
+    executerCMD(char* argv[]){
+        switch(argv[0]){
+            case "ls" :
+                [...]
+                break;
+            case "cd" :
+                [...]
+                break;
+        }
+    }
+
+-En dernier lieu, tenter de mettre en place la partie réseau du projet
 
 -----------------------------------------------------------------
 
-Partie librarie : 
+Partie librairie : 
 
-
+-Commencer par le développement de l'automate à états finis
+-Puis partir sur les commandes simples de base comme "ls"
+-Définir une commande par defaut permettant de mettre fin au processus "eshelle"
 
 -----------------------------------------------------------------
 

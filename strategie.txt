@@ -1,6 +1,7 @@
 Partie shell :
 
 -Afficher une "simili" ligne relative à l'utilisateur et au fichier dans lequel il se trouve
+-notamment à l'aide de la commande fflush(stdout) qui force l'affichage
 -Découper la commande saisie par l'utilisateur à l'aide d'un automate à états finis
 -Faire la liaison entre les méthodes et les mots découpés de l'automate
 
@@ -16,7 +17,7 @@ Exemple de méthode après vérification par l'automate :
         }
     }
 
--En dernier lieu, tenter de mettre en place la partie réseau du projet
+-En dernier lieu, tenter de mettre en place la partie réseau du projet -> Création de socket client/serveur
 
 -----------------------------------------------------------------
 

@@ -5,3 +5,65 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
+#define INVALID_SOCKET -1
+#define SOCKET_ERROR -1
+#define PORT 2000
+// We begin at 2000, because port 1 to 1024 are reserved (2000 is a random choice)
+
+// To close a socket, use the function close()
+// WARNING, socket is only working on Linux
+
+// WARNING, how to manage port
+
+typedef int SOCKET;
+typedef struct sockaddr_in sockaddr_in;
+typedef struct sockaddr sockaddr;
+
+int main(int argc, char const *argv[]) {
+  // Serveur socket :
+
+  /*
+  * AF_INET for TCP protocol
+  * SOCK_STREAM for TCP protocol
+  * 0 for TCP protocol
+  */
+
+  SOCKET sock;
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == SOCKET_ERROR){
+    printf("Error while creating the socket. \n");
+    exit(0);
+  }
+  //signal(SIGINT, fin);
+
+  // Socket's settings :
+  sockaddr_in servSockAddr;             // Automatic adress
+  servSockAddr.sin_family = AF_INET;    // TCP protocol
+  /* INADDR_ANY = allowed us to work without knowing the IP adress of the machine
+  If we want to specify an adress : inet_addr("127.0.0.1")
+  */
+  servSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  servSockAddr.sin_port = htons(PORT);
+
+  // Client socket :
+  SOCKET clientSock;
+  sockaddr_in clientSockAddr;
+  socklen_t clientSize = sizeof(clientSockAddr);
+
+  // Linking the socket and the struct :
+  if (bind(sock, (sockaddr*)&servSockAddr, sizeof(servSockAddr)) != -1){
+    printf("Waiting a connection with the client on the port : %d \n", PORT);
+    listen(sock, 5);
+    // We are listenning 5 computers at the same time
+
+    // Connection with a client :
+    clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize);
+    printf("Client is connecting from %s on port : %d \n", inet_ntoa(clientSockAddr.sin_addr), htons(clientSockAddr.sin_port));
+  }
+  else {
+    printf("Error while binding. \n");
+    exit(0);
+  }
+
+  return 0;
+}

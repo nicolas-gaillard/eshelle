@@ -1,19 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "option_folder.c"
+
 #include <unistd.h>
-
-int isOption(char* s){
-    if(s!=NULL && s[0]=='-') return 1;
-    else return 0;
-}
-
-int isFolder(char* s){
-    struct stat sts;  
-    if(s!=NULL && stat(s,&sts)==0 && S_ISDIR(sts.st_mode)) return 1;
-    else return 0;
-}
 
 int main(int argc,char *argv[]){
    
@@ -29,7 +16,7 @@ int main(int argc,char *argv[]){
 	}
     }
     else{
-	printf("Error ! L'argument %s n'est pas un dossier !\n",argv[1]
+	printf("Error ! L'argument %s n'est pas un dossier !\n",argv[1]);
 	return(-1);
     }
 

@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 
+#define _GNU_SOURCE
+
 /*
 shebang : #! puis script, permet de lancer un script
 */
@@ -24,9 +26,19 @@ void clear(){
 }
 
 void prompt(char *curDir, char *hostName){
+	// username@nameofthemachine:currentdirectory
+
 	getcwd(curDir,sizeof(curDir));
-	gethostname(hostName, sizeof(hostName));
-	printf("%s:%s$ \n", hostName, curDir);
+	//curDir = get_current_dir_name();
+	//getlogin_r(hostName, sizeof(hostName));
+	// getenv("NAME");
+	//getenv("PWD")
+	//get_current_dir_name()
+
+	//gethostname(hostName, sizeof(hostName));
+	//printf("%s@%s:%s$ \n", ,hostName, curDir);
+	printf("%s@%s:%s$ \n", getlogin(), gethostname(hostName, sizeof(hostName)), get_current_dir_name());
+
 }
 
 void command(char *cmd, int sizeCmd){

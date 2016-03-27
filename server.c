@@ -30,7 +30,8 @@ int main(int argc, char const *argv[]) {
   */
 
   SOCKET sock;
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == SOCKET_ERROR){
+  char buffer[100] = "";
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET){
     printf("Error while creating the socket. \n");
     exit(0);
   }
@@ -39,7 +40,8 @@ int main(int argc, char const *argv[]) {
   // Socket's settings :
   sockaddr_in sockServIn;             // Automatic adress
   sockServIn.sin_family = AF_INET;    // TCP protocol
-  /* INADDR_ANY = allowed us to work without knowing the IP adress of the machine
+  /*
+  INADDR_ANY = allowed us to work without knowing the IP adress of the machine
   If we want to specify an adress : inet_addr("127.0.0.1")
   */
   sockServIn.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -66,17 +68,30 @@ int main(int argc, char const *argv[]) {
   if ((clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize)) != SOCKET_ERROR){
     printf("Client is connecting from %s on port : %d \n", inet_ntoa(clientSockAddr.sin_addr), htons(clientSockAddr.sin_port));
 
-    while(1){       // Ajouter une condition d'arrêt propre
-    // Traitement des commandes
-    }
-
+    if (recv(sock, buffer, sizeof(buffer), 0) != SOCKET_ERROR){
+      printf("Command received");
+        // Traitement des commandes
+      }
+    else{
+      perror("Command not reveived");
+      shutdown(clientSock, 2);
+      close(clientSock);
+      close(sock);
+      exit(0);
+      }
   }
+  /*
+  Est ce qu'on remplace par :
+  while((clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize)) != SOCKET_ERROR))
+  */
   else {
     perror("Unable to connect");
     close(sock);
     exit(0);
   }
 
+shutdown(clientSock, 2);
+close(clientSock);
 close(sock);
-return 0;
+exit(0);
 }

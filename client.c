@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
 // Note : we have to launch server before client.
 
@@ -21,12 +22,25 @@ typedef int SOCKET;
 typedef struct sockaddr_in sockaddr_in;
 typedef struct sockaddr sockaddr;
 
+void clean(const char *buffer, FILE *fp)
+{
+    char *p = strchr(buffer,'\n');
+    if (p != NULL)
+        *p = 0;
+    else
+    {
+        int c;
+        while ((c = fgetc(fp)) != '\n' && c != EOF);
+    }
+}
+
 int main(int argc, char const *argv[]) {
 
   SOCKET sockClient;
   sockaddr_in sockClientIn;
+  char buffer[100]="";
 
-  if ((sockClient = socket(AF_INET, SOCK_STREAM, 0)) != SOCKET_ERROR){
+  if ((sockClient = socket(AF_INET, SOCK_STREAM, 0)) != INVALID_SOCKET){
     sockClientIn.sin_addr.s_addr = inet_addr(IP);
     sockClientIn.sin_family = AF_INET;
     sockClientIn.sin_port = htons(PORT);
@@ -43,6 +57,13 @@ int main(int argc, char const *argv[]) {
     perror("Unable to connect");
     close(sockClient);
     exit(0);
+  }
+
+  while (strcmp(buffer,"quit") != 0){
+    fgets(buffer, sizeof(buffer), stdin);
+    clean(buffer, stdin);
+
+    send(sockClient, buffer, sizeof(buffer), 0);
   }
 
 

@@ -60,6 +60,7 @@ int main(int argc, char const *argv[]) {
   }
 
   while (strcmp(buffer,"quit") != 0){
+    // #!./shell <-- shell launcher
     fgets(buffer, sizeof(buffer), stdin);
     clean(buffer, stdin);
 

@@ -11,8 +11,6 @@
 
 // Besoin de <netinet/in.h> ? --> definitions of structures needed for sockets
 
-// recv pour envoyer des messages au serveur
-
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define IP "127.0.0.1"

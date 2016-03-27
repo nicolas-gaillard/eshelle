@@ -37,13 +37,13 @@ int main(int argc, char const *argv[]) {
   //signal(SIGINT, fin);
 
   // Socket's settings :
-  sockaddr_in servSockAddr;             // Automatic adress
-  servSockAddr.sin_family = AF_INET;    // TCP protocol
+  sockaddr_in sockServIn;             // Automatic adress
+  sockServIn.sin_family = AF_INET;    // TCP protocol
   /* INADDR_ANY = allowed us to work without knowing the IP adress of the machine
   If we want to specify an adress : inet_addr("127.0.0.1")
   */
-  servSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  servSockAddr.sin_port = htons(PORT);
+  sockServIn.sin_addr.s_addr = htonl(INADDR_ANY);
+  sockServIn.sin_port = htons(PORT);
 
   // Client socket :
   SOCKET clientSock;
@@ -51,19 +51,32 @@ int main(int argc, char const *argv[]) {
   socklen_t clientSize = sizeof(clientSockAddr);
 
   // Linking the socket and the struct :
-  if (bind(sock, (sockaddr*)&servSockAddr, sizeof(servSockAddr)) != -1){
+  if (bind(sock, (sockaddr*)&sockServIn, sizeof(sockServIn)) != SOCKET_ERROR){
     printf("Waiting a connection with the client on the port : %d \n", PORT);
     listen(sock, 5);
     // We are listenning 5 computers at the same time
-
-    // Connection with a client :
-    clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize);
-    printf("Client is connecting from %s on port : %d \n", inet_ntoa(clientSockAddr.sin_addr), htons(clientSockAddr.sin_port));
   }
-  else {
-    printf("Error while binding. \n");
+  else{
+    perror("Error while binding");
+    close(sock);
     exit(0);
   }
 
-  return 0;
+  // Connection with a client :
+  if ((clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize)) != SOCKET_ERROR){
+    printf("Client is connecting from %s on port : %d \n", inet_ntoa(clientSockAddr.sin_addr), htons(clientSockAddr.sin_port));
+
+    while(1){       // Ajouter une condition d'arrêt propre
+    // Traitement des commandes
+    }
+
+  }
+  else {
+    perror("Unable to connect");
+    close(sock);
+    exit(0);
+  }
+
+close(sock);
+return 0;
 }

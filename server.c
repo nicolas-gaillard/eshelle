@@ -83,6 +83,8 @@ int main(int argc, char const *argv[]) {
   /*
   Est ce qu'on remplace par :
   while((clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize)) != SOCKET_ERROR))
+  ou while() <-- chercher une bonne condition d'arrêt, ex quand le client envoie quit, on change
+  un boolean et qui nous fait sortir de la boucle et qui donc quitte tout le protocole
   */
   else {
     perror("Unable to connect");

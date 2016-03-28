@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 // Note : we have to launch server before client.
 
@@ -47,6 +48,8 @@ int main(int argc, char const *argv[]) {
   }
   else{
     perror("Error while creating the socket");
+    // OU :
+    // printf ("ERROR %d : %s", errno, strerror(errno));
     exit(0);
   }
 

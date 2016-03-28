@@ -29,16 +29,31 @@ void prompt(char *curDir, char *hostName){
 	// username@nameofthemachine:currentdirectory
 
 	getcwd(curDir,sizeof(curDir));
+	gethostname(hostName, sizeof(hostName));
+
+	// TEST : 
 	//curDir = get_current_dir_name();
 	//getlogin_r(hostName, sizeof(hostName));
 	// getenv("NAME");
 	//getenv("PWD")
 	//get_current_dir_name()
 
-	//gethostname(hostName, sizeof(hostName));
-	//printf("%s@%s:%s$ \n", ,hostName, curDir);
-	printf("%s@%s:%s$ \n", getlogin(), gethostname(hostName, sizeof(hostName)), get_current_dir_name());
 
+	// strcmp(curDir,"") == *curDir == NULL;
+	if ((strcmp(curDir,"") == 0) && (strcmp(hostName,"") == 0)){
+		printf("%s@bash:~$ \n", getlogin());
+
+	}
+	else if (strcmp(curDir,"") == 0){
+		printf("%s@%s:~$ \n", getlogin(), hostName);
+
+	}
+	else if (strcmp(hostName,"") == 0){
+		printf("%s@bash:%s$ \n", getlogin(), curDir);	
+	}
+	else {
+		printf("%s@%s:%s$ \n", getlogin(), hostName, curDir);
+	}
 }
 
 void command(char *cmd, int sizeCmd){

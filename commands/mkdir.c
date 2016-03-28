@@ -17,8 +17,8 @@
 */
 int isMode(char *testedMode){
     // Declaration of variables
-    int i=0;			// cpt
-    int isMode=1;		// boolean
+    int i=0;		// cpt
+    int isMode=1;	// boolean
 
     // While the characters are numbers between 0 and 7, testedMode is considered as a "mode"
     while(isMode==1 && i<strlen(testedMode)){
@@ -39,68 +39,68 @@ int isMode(char *testedMode){
 		creates a directory with rights if option "-m" is required
 */
 int main(int argc,char *argv[]){
-  	// Declaration of variables
-    int mode=0; 				// final mode
-    char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
-    char *nameDir=NULL;			// name of the passed directory
-    int mflag=0;				// used to know if option "-m" is required or not
+	// Declaration of variables
+	int mode=0; 				// final mode
+	char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
+	char *nameDir=NULL;			// name of the passed directory
+	int mflag=0;				// used to know if option "-m" is required or not
 
-    // An error is displayed if there is too few arguments
-    if(argc<2){
+	// An error is displayed if there is too few arguments
+	if(argc<2){
 		printf("mkdir : too few arguments to function mkdir\n");
 		return(-1);
-    }
-    // An error is displayed if there are too many arguments
-    else if(argc>4){
+	}
+	// An error is displayed if there are too many arguments
+	else if(argc>4){
 		printf("mkdir : too many arguments\n");
 		return(-1);
-    }
-    // Creation of the directory
-    else{
-    	// 
+	}
+	// Creation of the directory
+	else{
+		// We check if option "-m" is required
 		opterr=0;
-		while ((c = getopt (argc, argv, "abc:")) != -1)
-		    switch (c){
-			case '?':
-			    if (optopt == 'm') mflag=1;
-			    break;
-			default:
-			    abort ();
-		    }
-
+		while ((c = getopt (argc, argv, "abc:")) != -1){
+			switch (c){
+				case '?':
+					if (optopt == 'm') mflag=1;
+					break;
+				default:
+					abort ();
+			}
+		}
 		// For each elements we check if it's the mode (if "-m") or the directory's name
 		int index;					
-    	int c;
+		int c;
 		for (index = optind; index < argc; index++){
-		    if(mflag==1){
+			if(mflag==1){
 				if(isMode(argv[index])){
 					// If the mode is correct we transform it into the right form
-			    	if(strlen(argv[index])==3){
-			    		int i=0;
-			    		for(i=0;i<3;i++) completeMode[i+1]=argv[index][i];
-					    mode = strtol(completeMode, 0, 8);
-				    	// There is no mode to found anymore
+					if(strlen(argv[index])==3){
+						int i=0;
+						for(i=0;i<3;i++) completeMode[i+1]=argv[index][i];
+						mode = strtol(completeMode, 0, 8);
+						// There is no mode to found anymore
 						mflag=0;
 					}
 					else{
-					    printf("mkdir : mode %s is incorrect\n",argv[index]);
-			    		return(-1);
-			    	}
+						printf("mkdir : mode %s is incorrect\n",argv[index]);
+						return(-1);
+					}
 				}
 				else{
-			    	if(nameDir==NULL) nameDir=argv[index];
+					if(nameDir==NULL) nameDir=argv[index];
 				}
-		    }
-		    else{
-			    if(nameDir==NULL) nameDir=argv[index];
+			}
+			else{
+				if(nameDir==NULL) nameDir=argv[index];
 			}
 		}
 		// We make the directory or an error will be displayed if it already exists
 		if(mkdir(nameDir,mode)!=0){
-		   	printf("mkdir : repertory %s already exists\n",nameDir);
-		   	return(-1);
+			printf("mkdir : repertory %s already exists\n",nameDir);
+			return(-1);
 		} 
-    }
+	}
 
-    return 0;
+	return 0;
 }

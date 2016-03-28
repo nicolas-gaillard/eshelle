@@ -32,22 +32,16 @@ int isMode(char *testedMode){
 /*
 	Function name : 
 		main 
-	Argument : 
+	Arguments : 
 		int argc (number of passed arguments)
 		char *argv[] (arguments)
 	Description : 
 		creates a directory with rights if option "-m" is required
 */
 int main(int argc,char *argv[]){
-	// Declaration of variables
-	int mode=0; 				// final mode
-	char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
-	char *nameDir=NULL;			// name of the passed directory
-	int mflag=0;				// used to know if option "-m" is required or not
-
 	// An error is displayed if there is too few arguments
 	if(argc<2){
-		printf("mkdir : too few arguments to function mkdir\n");
+		printf("mkdir : too few arguments\n");
 		return(-1);
 	}
 	// An error is displayed if there are too many arguments
@@ -55,9 +49,16 @@ int main(int argc,char *argv[]){
 		printf("mkdir : too many arguments\n");
 		return(-1);
 	}
+	// Declaration of variables
+	int mode=0; 				// final mode
+	char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
+	char *nameDir=NULL;			// name of the passed directory
+	int mflag=0;				// used to know if option "-m" is required or not
+
 	// Creation of the directory
 	else{
 		// We check if option "-m" is required
+		int c;
 		opterr=0;
 		while ((c = getopt (argc, argv, "abc:")) != -1){
 			switch (c){
@@ -69,8 +70,7 @@ int main(int argc,char *argv[]){
 			}
 		}
 		// For each elements we check if it's the mode (if "-m") or the directory's name
-		int index;					
-		int c;
+		int index;
 		for (index = optind; index < argc; index++){
 			if(mflag==1){
 				if(isMode(argv[index])){

@@ -15,45 +15,45 @@
 		removes recursively directory (if "-r")
 */
 int recursiveRmDir(char *nameDir){
-   	// Declaration of variables
-   	DIR *directory;           	// the directory we want to remove
-    struct dirent *entry;     	// used to know the information of the directory
-    struct stat file_stat;    	// used to know the information of the content file
-    char buffer[1024] = {0};	// a tab which contains the path of a file containing in the directory
+	// Declaration of variables	
+	DIR *directory;           	// the directory we want to remove
+	struct dirent *entry;     	// used to know the information of the directory
+	struct stat file_stat;    	// used to know the information of the content file
+	char buffer[1024] = {0};	// a tab which contains the path of a file containing in the directory
 
-    // Directory opening
-    directory = opendir(nameDir);
-    if (directory==NULL){
-        printf("rm : cannot open the directory %s\n",nameDir);
-        return -1;
-    }
+	// Directory opening
+	directory = opendir(nameDir);
+	if (directory==NULL){
+		printf("rm : cannot open the directory %s\n",nameDir);
+		return -1;
+	}
 
-    // For each content file of the directory we remove it
-    while ((entry=readdir(directory))!=NULL) {
-        // We ignore the "." and ".." directories
-        if (strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0) continue;
-        // We make the path of the content file
-        snprintf(buffer, 1024, "%s/%s", nameDir, entry->d_name);
-        // We collect the information of the content file
-        stat(buffer, &file_stat);
+	// For each content file of the directory we remove it
+	while ((entry=readdir(directory))!=NULL) {
+		// We ignore the "." and ".." directories
+		if (strcmp(entry->d_name,".")==0 || strcmp(entry->d_name,"..")==0) continue;
+		// We make the path of the content file
+		snprintf(buffer, 1024, "%s/%s", nameDir, entry->d_name);
+		// We collect the information of the content file
+		stat(buffer, &file_stat);
 		// If the content file is a regular file we unlink it
 		if (S_ISREG(file_stat.st_mode)) unlink(buffer);
 		// Else it's a directory and we throw the recursive function on it
-        else if ( S_ISDIR(file_stat.st_mode) ) recursiveRmDir(buffer);
-    }
-	
-	// Directory closure
-    closedir(directory);
+		else if ( S_ISDIR(file_stat.st_mode) ) recursiveRmDir(buffer);
+	}
 
-    // The directory is now empty, we can remove it normaly
-    if(rmdir(nameDir)!=0){
+	// Directory closure
+	closedir(directory);
+
+	// The directory is now empty, we can remove it normaly
+	if(rmdir(nameDir)!=0){
 		errno=rmdir(nameDir);
 		if(errno==ENOTEMPTY) printf("rm : directory %s is not empty\n",nameDir);
 		else if(errno==EACCES) printf("rm : you don't have rights on the directory %s\n",nameDir);
 		else printf("rm : directory %s doesn't exist\n",nameDir);
 	}
 
-    return 0;
+	return 0;
 }
 
 /*

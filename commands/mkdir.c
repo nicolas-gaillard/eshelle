@@ -60,13 +60,14 @@ int main(int argc,char *argv[]){
 		// We check if option "-m" is required
 		int c;
 		opterr=0;
-		while ((c = getopt (argc, argv, "abc:")) != -1){
+		while ((c = getopt (argc, argv, "m")) != -1){
 			switch (c){
-				case '?':
-					if (optopt == 'm') mflag=1;
+				case 'm':
+					mflag=1;
 					break;
-				default:
-					abort ();
+				case '?' :
+					printf("mkdir : option %s doesn't exist for command mkdir\n",argv[optind-1]);
+					return(-1);
 			}
 		}
 		// For each elements we check if it's the mode (if "-m") or the directory's name

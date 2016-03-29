@@ -33,13 +33,14 @@ int main(int argc,char *argv[]){
 		// We check if option "-n" is required
 		int c;
 		opterr=0;
-		while ((c = getopt (argc, argv, "abc:")) != -1){
+		while ((c = getopt (argc, argv, "n")) != -1){
 			switch (c){
-				case '?':
-					if (optopt == 'n') nflag=1;
+				case 'n':
+					nflag=1;
 					break;
-				default:
-					abort ();
+				case '?':
+					printf("cat : option %s doesn't exist for command cat\n",argv[optind-1]);
+					return(-1);
 			}
 		}
 		// For each elements we check if it's a file name

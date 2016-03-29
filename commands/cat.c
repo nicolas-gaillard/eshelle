@@ -21,11 +21,6 @@ int main(int argc,char *argv[]){
 		printf("cat : too few arguments\n");
 		return(-1);
 	}
-	// An error is displayed if there are too many arguments
-	else if(argc>4){
-		printf("cat : too many arguments\n");
-		return(-1);
-	}
 	else{
 		// Declaration of variables
 		FILE *pFile;	// the file passed in parameter
@@ -45,7 +40,7 @@ int main(int argc,char *argv[]){
 					return(-1);
 			}
 		}
-		// For each elements we check if it's a file name
+		// For each element we check if it's a file name
 		int index;
 		for (index = optind; index < argc; index++){
 			// If the argument is a regular file we display it or an error will be displayed

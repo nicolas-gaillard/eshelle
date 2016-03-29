@@ -44,17 +44,11 @@ int main(int argc,char *argv[]){
 		printf("mkdir : too few arguments\n");
 		return(-1);
 	}
-	// An error is displayed if there are too many arguments
-	else if(argc>4){
-		printf("mkdir : too many arguments\n");
-		return(-1);
-	}
 	// Creation of the directory
 	else{
 		// Declaration of variables
 		int mode=0775; 			// final mode
 		char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
-		char *nameDir=NULL;		// name of the passed directory
 		int mflag=0;			// used to know if option "-m" is required or not
 
 		// We check if option "-m" is required
@@ -70,7 +64,7 @@ int main(int argc,char *argv[]){
 					return(-1);
 			}
 		}
-		// For each elements we check if it's the mode (if "-m") or the directory's name
+		// For each element we check if it's the mode (if "-m") or the directory's name
 		int index;
 		for (index = optind; index < argc; index++){
 			if(mflag==1){
@@ -89,23 +83,20 @@ int main(int argc,char *argv[]){
 					}
 				}
 				else{
-					if(nameDir==NULL) nameDir=argv[index];
+					// An error is displayed if there is no mode argument with option "-m"
+					if(mflag==1){
+						printf("mkdir : there is no mode argument\n");
+						return(-1);
+					}
+					// We make the directory or an error will be displayed if it already exists
+					if(mkdir(argv[index],mode)!=0) printf("mkdir : repertory %s already exists\n",argv[index]);
 				}
 			}
 			else{
-				if(nameDir==NULL) nameDir=argv[index];
+				// We make the directory or an error will be displayed if it already exists
+				if(mkdir(argv[index],mode)!=0) printf("mkdir : repertory %s already exists\n",argv[index]);
 			}
 		}
-		// An error is displayed if there is no mode argument with option "-m"
-		if(mflag==1){
-			printf("mkdir : there is no mode argument\n");
-			return(-1);
-		}
-		// We make the directory or an error will be displayed if it already exists
-		if(mkdir(nameDir,mode)!=0){
-			printf("mkdir : repertory %s already exists\n",nameDir);
-			return(-1);
-		} 
 	}
 
 	return 0;

@@ -49,12 +49,18 @@ int main(int argc,char *argv[]){
 			if(isRegularFile(argv[index])){
 				if(pFile=fopen(argv[index],"rt")){
 					int numLigne=1;
-					while (fgets(s, sizeof s, pFile) != NULL){
-						if(nflag==1){
+					// If option "-n" is required we display lines numbers before the content
+					if(nflag==1){
+						while (fgets(s, sizeof s, pFile) != NULL){
 							printf("%6d",numLigne);
 							numLigne++;
+							printf("	%s", s);
 						}
-						printf("	%s", s);
+					}
+					else{
+						while (fgets(s, sizeof s, pFile) != NULL){
+							printf("%s", s);
+						}
 					}
 					fclose(pFile);
 				}

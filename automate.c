@@ -4,22 +4,24 @@
 
 enum States
 	{
-		State0,
-		State1,
-		State2,
-		State3,
-		State4,
-		State5,
-		State6,
-		State601,
-		State61,
-		State62,
-		State7,
-		State71,
-		State8,
-		State9,
-		StateFinal,
-		StateFail,
+		State0,  //0
+		State1,  //1
+		State2,  //2
+		State3,  //3
+		State4,  //4
+		State41, //5
+		State5,  //6
+		State51, //7
+		State6,  //8
+		State601,//9
+		State61, //10
+		State62, //11
+		State7,  //12
+		State71, //13
+		State8,  //14
+		State9,  //15
+		StateFinal, //16
+		StateFail, //17
 	};
 
 int isNumber(char c){
@@ -52,14 +54,19 @@ int main(){
 
 	char command[] = "ls | texte | cat << texte.txt";
 	int lenString = strlen(command);
+	int i = 0;
 
 	printf("%s de taille %d \n", command, lenString);
 
-	for(int i = 0; i < lenString ; i++){
+	for(i ; i < lenString ; i++){
 		switch(curState)
 		{
 			case State0:
-				if(isLetter(command[i]) || command[i] == ' '){
+				// Permet de gérer les espaces qui peuvent etre placés devant la commande
+				if(command[i] == ' '){
+					curState = State0;
+				}
+				else if(isLetter(command[i])){
 					curState = State1;
 				}
 				else{
@@ -107,20 +114,40 @@ int main(){
 				break;
 
 			case State4:
-				if(isLetter(command[i])){
+				if(command[i] == ' '){
 					curState = State5;
 				}
-				else if(command[i] != ' '){
+				else if(command[i] == '|'){
+					curState = State41;
+				}
+				else{
 					curState = StateFail;
 				}
 				break;
 
+			case State41:
+				if(command[i] == ' '){
+					curState = State5;
+				}
+				else{
+					curState = StateFail;
+				}
+
 			case State5:
+				if(isLetter(command[i])){
+					curState = State51;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State51:
 				if(command[i] == ' '){
 					curState = State2;
 				}
-				else if(isLetter(command[i] == 0)){
-					curState = StateFail;
+				else if(isLetter(command[i])){
+					curState = State51;
 				}
 				break;
 
@@ -147,8 +174,11 @@ int main(){
 				if(command[i] == '<'){
 					curState = State7;
 				}
-				else{
+				else if(command[i] == ' '){
 					curState = State601;
+				}
+				else{
+					curState = StateFail;
 				}
 				break;
 
@@ -159,8 +189,11 @@ int main(){
 				if(command[i] == '>'){
 					curState = State601;
 				}
-				else{
+				else if(command[i] == ' '){
 					curState = State601;
+				}
+				else{
+					curState = StateFail;
 				}
 				break;
 
@@ -187,14 +220,14 @@ int main(){
 				if(isLetter(command[i]) == 0){
 					curState = StateFail;
 				}
-				break;
+				break;	
 
 			case StateFail:
 				printf("La commande n'est pas correcte \n");
 				return 0;
 				break;
 		}
-		printf("%d \n", curState);
+		printf("Le caractere %c nous envoie vers l'etape %d \n", command[i], curState);
 	}
 	printf("Fin de l'automate \n");
 }

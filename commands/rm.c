@@ -38,7 +38,7 @@ int recursiveRmDir(char *nameDir){
         stat(buffer, &file_stat);
 		// If the content file is a regular file we unlink it
 		if (S_ISREG(file_stat.st_mode)) unlink(buffer);
-        // Else it's a directory and we throw the recursive function on it
+		// Else it's a directory and we throw the recursive function on it
         else if ( S_ISDIR(file_stat.st_mode) ) recursiveRmDir(buffer);
     }
 	

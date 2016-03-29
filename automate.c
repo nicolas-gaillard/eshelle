@@ -52,7 +52,7 @@ int main(){
 
 	printf("Début de l'automate \n");
 
-	char command[] = "ls | texte | cat << texte.txt";
+	char command[] = "ls -al | texte | cat << texte.txt";
 	int lenString = strlen(command);
 	int i = 0;
 

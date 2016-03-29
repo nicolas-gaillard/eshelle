@@ -37,7 +37,7 @@ void clear(){
 void prompt(char *currentDir, char *hostName){
 	// username@nameofthemachine:currentdirectory
 
-	getcwd(currentDir,sizeof(currentDir));
+	//getcwd(currentDir,sizeof(currentDir));
 	gethostname(hostName, sizeof(hostName));
 
 	// TEST : 
@@ -47,9 +47,10 @@ void prompt(char *currentDir, char *hostName){
 	//getenv("PWD")
 	//get_current_dir_name()
 
-	printf("Interpreteur de commande v1.0 \nTaper \"quit\" pour quitter\n %s", get_current_dir_name());
+	printf("Interpreteur de commande v1.0 \nTaper \"quit\" pour quitter\n");
 
 	// strcmp(currentDir,"") == *currentDir == NULL;
+	/*
 	if ((strcmp(currentDir,"") == 0) && (strcmp(hostName,"") == 0)){
 		printf("%s@bash:~$ \n", getlogin());
 
@@ -63,6 +64,14 @@ void prompt(char *currentDir, char *hostName){
 	}
 	else {
 		printf("%s@%s:%s$ \n", getlogin(), hostName, currentDir);
+	}
+	*/
+	if (strcmp(hostName,"") == 0)
+	{
+		printf("%s@bash:%s$ \n", getlogin(), get_current_dir_name());	
+	}
+	else{
+		printf("%s@%s:%s$ \n", getlogin(), hostName,get_current_dir_name());	
 	}
 	fflush(stdout);
 }

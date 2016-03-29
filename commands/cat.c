@@ -1,8 +1,10 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "option_folder.c"
+#include "IS_file.c"
 #include <unistd.h>
 #include <string.h>
+
+#define TAILLE 100
 
 /*
 	Function name : 
@@ -16,18 +18,18 @@
 int main(int argc,char *argv[]){
 	// An error is displayed if there is too few arguments
 	if(argc<2){
-		printf("mkdir : too few arguments\n");
+		printf("cat : too few arguments\n");
 		return(-1);
 	}
 	// An error is displayed if there are too many arguments
 	else if(argc>4){
-		printf("mkdir : too many arguments\n");
+		printf("cat : too many arguments\n");
 		return(-1);
 	}
 	else{
 		// Declaration of variables
 		FILE *pFile;	// the file passed in parameter
-		char s[100];	// a tab of char to display line by line
+		char s[TAILLE];	// a tab of char to display line by line
 		int nflag=0;	// used to know if option "-n" is required or not
 		
 		// We check if option "-n" is required
@@ -49,9 +51,9 @@ int main(int argc,char *argv[]){
 			// If the argument is a regular file we display it or an error will be displayed
 			if(isRegularFile(argv[index])){
 				if(pFile=fopen(argv[index],"rt")){
-					int numLigne=1;
 					// If option "-n" is required we display lines numbers before the content
 					if(nflag==1){
+						int numLigne=1;
 						while (fgets(s, sizeof s, pFile) != NULL){
 							printf("%6d",numLigne);
 							numLigne++;
@@ -65,14 +67,13 @@ int main(int argc,char *argv[]){
 					}
 					fclose(pFile);
 				}
-				else printf("Erreur d'ouverture du fichier !\n");
+				else printf("cat : opening file error\n");
 			}
 			else{
-				printf("Le fichier %s n'existe plus ou pas !\n",argv[2]);
+				printf("cat : file %s doesn't exist\n",argv[2]);
 			}
 		}
 	}
 
 	return 0;
 }
-

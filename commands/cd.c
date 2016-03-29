@@ -1,6 +1,6 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "option_folder.c"
+#include "IS_file.c"
 #include <unistd.h>
 
 /*

@@ -52,10 +52,10 @@ int main(int argc,char *argv[]){
 	// Creation of the directory
 	else{
 		// Declaration of variables
-		int mode=0775; 				// final mode
+		int mode=0775; 			// final mode
 		char completeMode[]="0";	// used to transform rights in the right form (777 --> 0777)
-		char *nameDir=NULL;			// name of the passed directory
-		int mflag=0;				// used to know if option "-m" is required or not
+		char *nameDir=NULL;		// name of the passed directory
+		int mflag=0;			// used to know if option "-m" is required or not
 
 		// We check if option "-m" is required
 		int c;

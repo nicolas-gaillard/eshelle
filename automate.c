@@ -8,6 +8,10 @@ enum States
 		State1,  //1
 		State2,  //2
 		State3,  //3
+		State31,
+		State32,
+		State33,
+		State34,
 		State4,  //4
 		State41, //5
 		State5,  //6
@@ -99,6 +103,9 @@ int main(){
 				else if(command[i] == '>'){
 					curState = State62;
 				}
+				else if(command[i] == '&'){
+					curState = State31;
+				}
 				else{
 					curState = StateFail;
 				}
@@ -109,6 +116,42 @@ int main(){
 					curState = State8;
 				}
 				else if(isLetter(command[i]) == 0){
+					curState = StateFail;
+				}
+				break;
+
+			case State31:
+				if(command[i] == '&'){
+					curState = State32;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State32:
+				if(command[i] == ' '){
+					curState = State33;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State33:
+				if(isLetter(command[i])){
+					curState = State34;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State34:
+				if(command[i] == ' '){
+					curState = State2;
+				}
+				else if(isLetter(command[i]) == 0 ){
 					curState = StateFail;
 				}
 				break;

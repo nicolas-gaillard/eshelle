@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #define _GNU_SOURCE
 #define BUFFER_KEYBOARDING 100
@@ -46,7 +47,7 @@ void prompt(char *currentDir, char *hostName){
 	//getenv("PWD")
 	//get_current_dir_name()
 
-	printf("Interpreteur de commande v1.0 \nTaper \"quit\" pour quitter\n");
+	printf("Interpreteur de commande v1.0 \nTaper \"quit\" pour quitter\n %s", get_current_dir_name());
 
 	// strcmp(currentDir,"") == *currentDir == NULL;
 	if ((strcmp(currentDir,"") == 0) && (strcmp(hostName,"") == 0)){
@@ -122,6 +123,7 @@ int main(int argc, char const *argv[]) {
     		if (pid == 0){
     			// Interpretation of the command
     			if (execv("command", argCommand) == -1) {
+    				//kill(pid, SIGKILL);
     				exit(0);
     			}
     		}

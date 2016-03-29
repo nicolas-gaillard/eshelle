@@ -10,6 +10,8 @@
 #define BUFFER_PROMPT 30
 #define NUMBER_FONCTIONS 18
 
+// WARNING : 
+
 char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
 "chgrp", "echo", "ps", "top", "su"};
@@ -90,7 +92,7 @@ int exist(char *c, char *t[]){
 // Rajouter la libération de ressources
 
 int main(int argc, char const *argv[]) {
-	char currentDir[BUFFER_PROMPT];
+	//char currentDir[BUFFER_PROMPT];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
 	char hostName[BUFFER_PROMPT];
 
@@ -143,7 +145,7 @@ int main(int argc, char const *argv[]) {
     	}
 	}
 
-	free(currentDir);
+	//free(currentDir);
 	free(keyboarding);
 	free(hostName);
 	free(command);

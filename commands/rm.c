@@ -8,7 +8,7 @@
 
 /*
 	Function name : 
-		recursiveRM 
+		recursiveRmDir
 	Arguments : 
 		char *nameDir (name of the directory we want to remove)
 	Description : 
@@ -22,8 +22,7 @@ int recursiveRmDir(char *nameDir){
 	char buffer[1024] = {0};	// a tab which contains the path of a file containing in the directory
 
 	// Directory opening
-	directory = opendir(nameDir);
-	if (directory==NULL){
+	if ((directory=opendir(nameDir))==NULL){
 		printf("rm : cannot open the directory %s\n",nameDir);
 		return -1;
 	}

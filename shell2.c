@@ -82,33 +82,30 @@ int exist(char *c, char *t[]){
 // Pour le pipe, passé par un fichier temporaire tmpfile()
 
 // FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
-int stdoutRedirection(char* arg[], int size){
+void stdoutRedirection(char* arg[], int size){
 	// Parcours du tableau :
 	for (int i = 0; i < size; ++i)
 	{
 		if (strcmp(arg[i],">") == 0){
 			freopen(arg[i+1], "a", stdout);
-			return 1;
 		}
 		else if (strcmp(arg[i], ">>") == 0){
 			freopen(arg[i+1], "w", stdout);
-			return 1;
 		}
 	}
-	return 0;
 }
 
 int pipeRedirection(){
 	int redirection[2];
 	if (pipe(redirection) == -1){
 		perror("Pipe failed");
-		return 0;
+		return 1;
 	}
 	else {
 		int pid;
 		if ((pid = fork()) == -1){
 			perror("Error : fork");
-			return 0;
+			return 1;
 		}
 		else {
 			if (pid == 0){ // child process
@@ -130,7 +127,7 @@ int pipeRedirection(){
 			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
 // Rajouter la libération de ressources
@@ -166,8 +163,7 @@ int main(int argc, char const *argv[]) {
     	// Checking the command :
     	if (strcmp(command,"quit") == 0){
     		// User wants to quit :
-    		exit(0); // A modifier en fonction des sockets 
-    		
+    		exit(0); // A modifier en fonction des sockets     		
     	}
     	else if (exist(command, functions) == 0){
     		// The command doesn't exist

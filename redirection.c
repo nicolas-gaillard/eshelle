@@ -16,6 +16,10 @@
 
 //#define INDEX_TO_SHIFT 0
 
+#define SUCCESS 0
+#define ERROR 1
+#define ERROR_EXEC -1
+
 int pipeRedirection(char *cmdBeforePipe[], char *cmdAfterPipe[]){
 	// Create the pipe which will "connect" the two commands
 	int interim[2];
@@ -40,7 +44,10 @@ int pipeRedirection(char *cmdBeforePipe[], char *cmdAfterPipe[]){
 
 		// Execution of the command after the pipe
 		// Faire une condition d'erreur 
-		execute(cmdAfterPipe);
+		if (execute(cmdAfterPipe) == ERROR_EXEC){
+			printf("Can't execute the command\n");
+			return -1;
+		}
 	}
 	else { // Parent process
 		// We close the read side
@@ -50,9 +57,49 @@ int pipeRedirection(char *cmdBeforePipe[], char *cmdAfterPipe[]){
 		close(interim[1]);
 
 		// Execution of the command before the pipe
-		execute(cmdBeforePipe)
+		if (execute(cmdBeforePipe) == ERROR_EXEC){
+			printf("Can't execute the command\n");
+			return -1;
+		}
 
 	}
+	return 0;
+}
+
+int andRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
+	if (execute(cmdBeforeAnd == SUCCESS)){
+		return execute(cmdAfterAnd);
+	}
+	else {
+		return ERROR;
+	}
+}
+
+int orRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
+	if (execute(cmdBeforeAnd == ERROR)){
+		return execute(cmdAfterAnd);
+	}
+}
+
+// Background redirection : 
+// The father process doesn't wait the end of the child process to treat other commands
+// "&" is always at the end of the command :
+int backgroundExecute(char *cmd[]){
+	char *cmd = argCmd[0];
+
+	int pid = fork();
+  	int *status = NULL;
+  	if (pid == 0){
+		if (execv(cmd, argCmd) != ERROR_EXEC){
+			exit(0);	
+		}
+		else {
+			printf("Can't execute the command\n");
+			return ERROR_EXEC;  	
+		}
+	}
+	free(pid);
+	free(status);
 	return 0;
 }
 
@@ -61,15 +108,15 @@ int whatsThisRedirection(char *arg[]){
 	// Sinon on execute simplement la commande
 	if (strcmp(arg[0],">") == 0){
 		freopen(arg[1], "w", stdout);
-		return 0;
+		return SUCCESS;
 	}
 	else if (strcmp(arg[0], ">>") == 0){
 		freopen(arg[1], "a", stdout);
-		return 0;
+		return SUCCESS;
 	}
 	else if (strcmp(arg[0], "<") == 0){
 		freopen(arg[1], "r", stdin);
-		return 0;
+		return SUCCESS;
 	}
 	// else if (strcmp(arg[i], "<<") == 0)
 	// else if (strcmp(arg[i], "||") == 0)
@@ -77,7 +124,7 @@ int whatsThisRedirection(char *arg[]){
 	// else if (strcmp(arg[i], "&") == 0)
 	// else if (strcmp(arg[i], ";") == 0)
 	else {
-		return 1;
+		return ERROR;
 	}
 }
 
@@ -102,14 +149,21 @@ int execute(char* argCmd[]){
 	int pid = fork();
   	int *status = NULL;
   	if (pid == 0){
-    	execv(cmd, argCmd);
-  	}
+		if (execv(cmd, argCmd) != -1){
+			exit(0);
+		}
+		else {
+			printf("Can't execute the command\n");
+			return ERROR_EXEC;
+		}
+	}
   	else {
     	wait(status);
   	}
-  
-	execv(cmd, argCmd);
-	return 0;
+
+  	free(pid);
+  	free(status);
+  	return 0;
 }
 
 int main(int argc, char const *argv[])

@@ -16,8 +16,6 @@
 */
 int main(int argc, char *argv[])
 {
-    printf("%d\n", argc);
-    printf("%s\n%s\n%s\n", argv[0], argv[1], argv[2]);
     /*
     * Displays an error message if there are too few/many arguments
     */
@@ -51,11 +49,13 @@ int main(int argc, char *argv[])
             
             if((f_Src = fopen(path_Src, "r")) == NULL)
             {
+                /* If the file to move can't be opened */
                 printf("Source file not found\n");
                 return 1;
             }
             if((f_Dest = fopen(path_Dest, "w+")) == NULL)
             {
+                /* If the destination folder doesn't exist */
                 printf("Destination folder not found\n");
                 fclose(f_Src);
                 return 2;
@@ -67,6 +67,18 @@ int main(int argc, char *argv[])
             fclose(f_Dest);
             fclose(f_Src);
             remove(argv[1]);
+        }
+        else if(isFolder(argv[1]))
+        {
+            /* Folder part */
+            char command[100];
+            
+            /* Lazy method */
+            strcpy(command, "mv ");
+            strcat(command, argv[1]);
+            strcat(command ," ");
+            strcat(command, argv[2]);
+            system(command);
         }
         else
         {

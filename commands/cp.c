@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
         printf("cp : missing argument\n");
         return -1;
     }
-    else if(argc > 3)
+    else if(argc > 4)
     {
         printf("cd : too many arguments\n");
         return -1;
@@ -66,6 +66,16 @@ int main(int argc, char *argv[])
             }
             fclose(f_Dest);
             fclose(f_Src);
+        }
+        else if(isFolder(argv[1]))
+        {
+            printf("cp : argument '-r' is required for a folder\n");
+            return -1;
+        }
+        else if(isFolder(argv[2]) && getopt(1, argv, "dir") == 'r')
+        {
+            printf("OK\n");
+            return -1;
         }
         else
         {

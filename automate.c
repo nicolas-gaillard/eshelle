@@ -7,25 +7,26 @@ enum States
 		State0,  //0
 		State1,  //1
 		State2,  //2
-		State3,  //3
-		State31,
-		State32,
-		State33,
-		State34,
-		State4,  //4
-		State41, //5
-		State5,  //6
-		State51, //7
-		State6,  //8
-		State601,//9
-		State61, //10
-		State62, //11
-		State7,  //12
-		State71, //13
-		State8,  //14
-		State9,  //15
-		StateFinal, //16
-		StateFail, //17
+		State29, //3
+		State3,  //4
+		State31, //5
+		State32, //6
+		State33, //7
+		State34, //8
+		State4,  //9
+		State41, //10
+		State5,  //11
+		State51, //12
+		State6,  //13
+		State601,//14
+		State61, //15
+		State62, //16
+		State7,  //17
+		State71, //18
+		State8,  //19
+		State9,  //20
+		StateFinal, //21
+		StateFail, //22
 	};
 
 int isNumber(char c){
@@ -56,7 +57,7 @@ int main(){
 
 	printf("Début de l'automate \n");
 
-	char command[] = "ls -al | texte | cat << texte.txt";
+	char command[] = "ls -al | texte | cat > texte.txt";
 	int lenString = strlen(command);
 	int i = 0;
 
@@ -111,9 +112,17 @@ int main(){
 				}
 				break;
 
+			case State29:
+				if(command[i] == ' '){
+					curState = State3;
+				}
+				else{
+					curState = StateFail;
+				}
+
 			case State3:
-				if(command[i] == '.'){
-					curState = State8;
+				if(command[i] == ' '){
+					curState = State2;
 				}
 				else if(isLetter(command[i]) == 0){
 					curState = StateFail;
@@ -233,7 +242,7 @@ int main(){
 					curState = State601;
 				}
 				else if(command[i] == ' '){
-					curState = State601;
+					curState = State6;
 				}
 				else{
 					curState = StateFail;

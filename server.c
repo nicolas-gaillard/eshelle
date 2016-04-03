@@ -69,17 +69,19 @@ int main(int argc, char const *argv[]) {
   if ((clientSock = accept(sock, (sockaddr*)&clientSockAddr, &clientSize)) != SOCKET_ERROR){
     printf("Client is connecting from %s on port : %d \n", inet_ntoa(clientSockAddr.sin_addr), htons(clientSockAddr.sin_port));
 
-    if (recv(sock, buffer, sizeof(buffer), 0) != SOCKET_ERROR){
-      printf("Command received");
-        // Traitement des commandes
+    while(1){
+      if (recv(sock, buffer, sizeof(buffer), 0) != SOCKET_ERROR){
+        printf("Command received");
+          // Traitement des commandes
       }
-    else{
-      perror("Command not reveived");
-      shutdown(clientSock, 2);
-      close(clientSock);
-      close(sock);
-      exit(0);
+      else{
+        perror("Command not reveived");
+        shutdown(clientSock, 2);
+        close(clientSock);
+        close(sock);
+        exit(0);
       }
+    }
   }
   /*
   Est ce qu'on remplace par :
@@ -93,8 +95,8 @@ int main(int argc, char const *argv[]) {
     exit(0);
   }
 
-shutdown(clientSock, 2);
-close(clientSock);
-close(sock);
-exit(0);
+  shutdown(clientSock, 2);
+  close(clientSock);
+  close(sock);
+  exit(0);
 }

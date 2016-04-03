@@ -16,7 +16,7 @@
 
 //#define INDEX_TO_SHIFT 0
 
-int pipeRedirection(char *cmdBeforePipe, char *cmdAfterPipe, char *argv1, char *argv2){
+int pipeRedirection(char *cmdBeforePipe[], char *cmdAfterPipe[]){
 	// Create the pipe which will "connect" the two commands
 	int interim[2];
 
@@ -40,7 +40,7 @@ int pipeRedirection(char *cmdBeforePipe, char *cmdAfterPipe, char *argv1, char *
 
 		// Execution of the command after the pipe
 		// Faire une condition d'erreur 
-		execlp(cmdAfterPipe, argv2);
+		execute(cmdAfterPipe);
 	}
 	else { // Parent process
 		// We close the read side
@@ -50,7 +50,7 @@ int pipeRedirection(char *cmdBeforePipe, char *cmdAfterPipe, char *argv1, char *
 		close(interim[1]);
 
 		// Execution of the command before the pipe
-		execlp(cmdBeforePipe, argv1);
+		execute(cmdBeforePipe)
 
 	}
 	return 0;
@@ -81,7 +81,7 @@ int whatsThisRedirection(char *arg[]){
 	}
 }
 
-int execute(char* argCmd[], int size){
+int execute(char* argCmd[]){
 	// Appel de la fonction qui va chercher dans les libraries
 	// cmd = fonction()
 
@@ -99,7 +99,7 @@ int execute(char* argCmd[], int size){
 
 	// Executing the command
 
-	/*int pid = fork();
+	int pid = fork();
   	int *status = NULL;
   	if (pid == 0){
     	execv(cmd, argCmd);
@@ -107,8 +107,7 @@ int execute(char* argCmd[], int size){
   	else {
     	wait(status);
   	}
-  	*/
-
+  
 	execv(cmd, argCmd);
 	return 0;
 }
@@ -127,7 +126,6 @@ int main(int argc, char const *argv[])
 	//execute(cmd, 2);
 
 	execvp("ls", cmd);
-	//execl("/bin/ls", "ls", "-l");
 
 	return 0;
 }

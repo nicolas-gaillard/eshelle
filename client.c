@@ -48,7 +48,7 @@ int main(int argc, char const *argv[]) {
   }
   else{
     perror("Error while creating the socket");
-    // OU :
+    // OR :
     // printf ("ERROR %d : %s", errno, strerror(errno));
     exit(0);
   }
@@ -69,7 +69,6 @@ int main(int argc, char const *argv[]) {
 
     send(sockClient, buffer, sizeof(buffer), 0);
   }
-
 
   // Attemps to connect to the server :
   close(sockClient);

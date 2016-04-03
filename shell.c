@@ -9,6 +9,8 @@
 #define BUFFER_KEYBOARDING 100
 #define BUFFER_PROMPT 30
 #define NUMBER_FONCTIONS 18
+#define SIZE_ARG 95
+#define SIZE_CMD 5
 
 // WARNING : 
 
@@ -37,37 +39,33 @@ void clear(){
 }
 
 void prompt(char *currentDir, char *hostName){
+	//getenv("NAME");
+	//getenv("PWD");
+
 	// username@nameofthemachine:currentdirectory
 
-	//getcwd(currentDir,sizeof(currentDir));
+	getcwd(currentDir,sizeof(currentDir));
 	gethostname(hostName, sizeof(hostName));
 
-	// TEST : 
-	//currentDir = get_current_dir_name();
-	//getlogin_r(hostName, sizeof(hostName));
-	// getenv("NAME");
-	//getenv("PWD")
-	//get_current_dir_name()
-
-	printf("Interpreteur de commande v1.0 \nTaper \"quit\" pour quitter\n");
-
-	// strcmp(currentDir,"") == *currentDir == NULL;
-	/*
+	// strcmp(currentDir,"") == *currentDir == NULL;	
 	if ((strcmp(currentDir,"") == 0) && (strcmp(hostName,"") == 0)){
-		printf("%s@bash:~$ \n", getlogin());
+		printf("%s@bash:~$ ", getlogin());
 
 	}
 	else if (strcmp(currentDir,"") == 0){
-		printf("%s@%s:~$ \n", getlogin(), hostName);
+		printf("%s@%s:~$ ", getlogin(), hostName);
 
 	}
 	else if (strcmp(hostName,"") == 0){
-		printf("%s@bash:%s$ \n", getlogin(), currentDir);	
+		printf("%s@bash:%s$ ", getlogin(), currentDir);	
 	}
 	else {
-		printf("%s@%s:%s$ \n", getlogin(), hostName, currentDir);
+		printf("%s@%s:%s$ ", getlogin(), hostName, currentDir);
 	}
-	*/
+
+	/*
+	OR : 
+	
 	if (strcmp(hostName,"") == 0)
 	{
 		printf("%s@bash:%s$ \n", getlogin(), get_current_dir_name());	
@@ -75,6 +73,8 @@ void prompt(char *currentDir, char *hostName){
 	else{
 		printf("%s@%s:%s$ \n", getlogin(), hostName,get_current_dir_name());	
 	}
+	*/
+
 	fflush(stdout);
 }
 
@@ -88,22 +88,27 @@ int exist(char *c, char *t[]){
 	return 0;
 }
 
+// Pour le pipe, passé par un fichier temporaire tmpfile()
+
+// FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
 
 // Rajouter la libération de ressources
-
 int main(int argc, char const *argv[]) {
-	//char currentDir[BUFFER_PROMPT];
+	char currentDir[BUFFER_PROMPT];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
 	char hostName[BUFFER_PROMPT];
 
 	// Name of the command
 	// 5 is the max number of letters of a command
-	char command[5];
+	char command[SIZE_CMD];
 	// Arguments of the command
-	char *argCommand[95];
+	char *argCommand[SIZE_ARG];
 
 	// Clear the terminal 
 	clear();
+
+	// Welcome message
+	printf("Shell v1.0 \nEnter \"quit\" to leave\n");
 
 	while(1){
 		// Display the prompt :
@@ -120,11 +125,11 @@ int main(int argc, char const *argv[]) {
     	// Checking the command :
     	if (strcmp(command,"quit") == 0){
     		// User wants to quit :
-    		exit(0); // A modifier en fonction des sockets 
-    		
+    		exit(0); // A modifier en fonction des sockets     		
     	}
     	else if (exist(command, functions) == 0){
     		// The command doesn't exist
+    		perror("The command doesn't exist ");
     	   	exit(0);
     	}
     	else{
@@ -145,11 +150,11 @@ int main(int argc, char const *argv[]) {
     	}
 	}
 
-	//free(currentDir);
+	free(currentDir);
 	free(keyboarding);
 	free(hostName);
 	free(command);
 	free(argCommand);
 
-  	return 0;
+	return 0;
 }

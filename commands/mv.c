@@ -19,13 +19,15 @@ int main(int argc, char *argv[])
     /*
     * Displays an error message if there are too few/many arguments
     */
-    if(argc < 2)
-    {
-        printf("mv : missing argument\n");
+    if(argc<2){
+        printf("mv : too few argument\n");
         return -1;
     }
-    else if(argc > 3)
-    {
+    if(argc==2){
+        printf("mv : missing destination file after '%s'\n",argv[1]);
+        return -1;
+    }
+    else if(argc>3){
         printf("mv : too many arguments\n");
         return -1;
     }

@@ -13,6 +13,8 @@
 *       char *argv[]    -> arguments
 *   Description :
 *       Change a file's owner and/or group
+*   How to launch it :
+*       sudo ./chown USER:GROUP FILE
 */
 int main(int argc, char *argv[])
 {
@@ -108,14 +110,14 @@ int main(int argc, char *argv[])
                 /* Looking for group ID */
                 if((pass = fopen("/etc/group", "r")) != NULL)
                 {
-                    /* We're searching for the specified user in /etc/passwd to get its ID */
+                    /* We're searching for the specified group in /etc/passwd to get its ID */
                     while((fgets(ligne,100,pass)) != NULL)
                     {
                         ret = strtok(ligne, ":");
                         for(i=0;i<2;i++)
                         {
-                            /* If a user in a line has the same name as the user argument, 
-                            * we go to the third field of the line to get the user ID */
+                            /* If a group in a line has the same name as the group argument, 
+                            * we go to the third field of the line to get the group ID */
                             if(strcmp(ret,groupe) == 0)
                             {
                                 ret = strtok(NULL, ":");
@@ -141,7 +143,7 @@ int main(int argc, char *argv[])
                 groupe = ret;
                 if((pass = fopen("/etc/group", "r")) != NULL)
                 {
-                    /* We're searching for the specified user in /etc/group to get its ID */
+                    /* We're searching for the specified group in /etc/group to get its ID */
                     while((fgets(ligne,100,pass)) != NULL)
                     {
                         ret = strtok(ligne, ":");

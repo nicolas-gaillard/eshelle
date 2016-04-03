@@ -112,7 +112,7 @@ int main(int argc,char *argv[]){
 	}
 		
 	int index = optind;
-	// If there is no file/directory in parameter we take automatically the current directory
+	// If there is no argument we take automatically the current directory
 	if(argv[index]==NULL){
 		if ((dirp=opendir("."))==NULL){
 			printf("ls : directory %s doesn't exist\n",".");

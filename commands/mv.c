@@ -1,4 +1,4 @@
-/** Author : Jordan BLOUIN **/
+/** Author : Jordan BLOUIN & Quentin LEVAVASSEUR **/
 
 #include "IS_file.c"
 #include <unistd.h>
@@ -14,7 +14,7 @@
 	Description : 
 		removes recursively directory (if "-r")
 */
-int recursiveMv(char *nameSource,char *nameDestination){
+int recursiveMv(const char *nameSource,const char *nameDestination){
 	// Declaration of variables	
 	DIR *source;           	            // the source directory we want to move ...
 	DIR *destination;           	    // ... in the destination directory
@@ -22,119 +22,69 @@ int recursiveMv(char *nameSource,char *nameDestination){
 	struct stat file_stat;    	        // used to know the information of the content file
 	char buffer[1024] = {0};	        // a tab which contains the path of a file containing in the source directory
 
-	if (isFolder(nameSource)){
-	    // Source directory opening
-    	if ((source=opendir(nameSource))==NULL){
-    		printf("mv : cannot open the directory %s\n",nameSource);
-    		return -1;
-    	}
+    // Source directory opening
+	if ((source=opendir(nameSource))==NULL){
+		printf("mv : cannot open the directory %s\n",nameSource);
+		return -1;
+	}
+
+    // Destination directory opening
+	if(mkdir(nameDestination,0775)!=0){
+	    printf("mv : repertory %s already exists\n",nameDestination);
+	}
+    if ((destination=opendir(nameDestination))==NULL){
+		printf("mv : no such directory %s\n",nameDestination);
+	    return -1;
+	}
 	
-	    // Destination directory opening
-		if(mkdir(nameDestination,0775)!=0){
-		    printf("mv2 : repertory %s already exists\n",nameDestination);
-		}
-		else printf("win !!!!!!\n");
-	    if ((destination=opendir(nameDestination))==NULL){
-    		printf("mv : no such directory %s\n",nameDestination);
-		    return -1;
-    	}
-    	
-    	// For each content file of the source directory we move it
-    	while ((sourceEntry=readdir(source))!=NULL) {
-    		printf("source : %s  destination : %s\n",nameSource,nameDestination);
-    		// We ignore the "." and ".." directories
-    		if (strcmp(sourceEntry->d_name,".")==0 || strcmp(sourceEntry->d_name,"..")==0) continue;
-    		// We make the path of the content file
-    		snprintf(buffer, 1024, "%s/%s", nameSource, sourceEntry->d_name);
-    		// We collect the information of the content file
-    		stat(buffer, &file_stat);
-    		// If the content file is a regular file we unlink it
-    		if (S_ISREG(file_stat.st_mode)){
-    		    FILE *f_Src;
-                FILE *f_Dest;
-                char *path_Dest = nameDestination, *path_Src = buffer;
-                char tmp[4096];
-                int i;
-                
-                /* Setting the path to create a new file into the designated folder */
-                if(buffer[0] != '.')
-                {
-                    strcat(path_Dest, "/");
-                    strcat(path_Dest, sourceEntry->d_name);
-                    printf("Dest path : %s\n", path_Dest);
-                }
-                
-                if((f_Src = fopen(path_Src, "r")) == NULL)
-                {
-                    /* If the file to move can't be opened */
-                    printf("Source file not found\n");
-                    return 1;
-                }
-                if((f_Dest = fopen(path_Dest, "w")) == NULL)
-                {
-                    /* If the destination folder doesn't exist */
-                    printf("Destination file not found\n");
-                    fclose(f_Src);
-                    return 2;
-                }
-                
-                while((i = fread(tmp, 1, 4096, f_Src)) != 0)
-                {
-                    fwrite(tmp, 1, i, f_Dest);
-                }
-                fclose(f_Dest);
+	// For each content file of the source directory we move it
+	while ((sourceEntry=readdir(source))!=NULL) {
+		// We ignore the "." and ".." directories
+		if (strcmp(sourceEntry->d_name,".")==0 || strcmp(sourceEntry->d_name,"..")==0) continue;
+		// We make the path of the content file
+		snprintf(buffer, 1024, "%s/%s", nameSource, sourceEntry->d_name);
+		char path_Src[1024], path_Dest[1024];
+		strcpy(path_Src,buffer);
+        strcpy(path_Dest,nameDestination);
+
+        if(path_Src[strlen(path_Src)-1]!='/') strcat(path_Dest, "/");
+        strcat(path_Dest, sourceEntry->d_name);
+
+		// We collect the information of the content file
+		stat(path_Src, &file_stat);
+		// If the content file is a regular file we unlink it
+		if (S_ISREG(file_stat.st_mode)){
+		    FILE *f_Src;
+            FILE *f_Dest;
+            char tmp[4096];
+            int i=0;
+            
+            if((f_Src = fopen(path_Src, "r")) == NULL){
+                /* If the file to move can't be opened */
+                printf("Source file not found\n");
+                return 1;
+            }
+            if((f_Dest = fopen(path_Dest, "w")) == NULL){
+                /* If the destination folder doesn't exist */
+                printf("Destination file %s not found\n", path_Dest);
                 fclose(f_Src);
-    		    unlink(buffer);
-    		}
-    		// Else it's a directory and we throw the recursive function on it
-    		else if ( S_ISDIR(file_stat.st_mode) ){
-    		    char tmp[strlen(nameDestination)];
-    		    strcpy(tmp,nameDestination);
-    		    strcat(tmp,"/");
-    		    strcat(tmp,sourceEntry->d_name);
-                
-    		    recursiveMv(buffer,tmp);
-    		}
-    	}
-    	if(rmdir(nameSource)!=0){
-    		printf("rm : directory %s doesn't exist\n",nameSource);
-    	}
-	}
-	else if(isRegularFile(nameSource)){
-	    printf("source : %s  destination : %s\n",nameSource,nameDestination);
-	    FILE *f_Src;
-        FILE *f_Dest;
-        char *path_Dest = nameDestination, *path_Src = nameSource;
-        char tmp[4096];
-        int i;
-        
-        if((f_Src = fopen(path_Src, "r")) == NULL)
-        {
-            /* If the file to move can't be opened */
-            printf("Source file not found\n");
-            return 1;
-        }
-        if((f_Dest = fopen(path_Dest, "w")) == NULL)
-        {
-            /* If the destination folder doesn't exist */
-            printf("Destination file not found\n");
+                return 2;
+            }
+            
+            while((i = fread(tmp, 1, 4096, f_Src)) != 0){
+                fwrite(tmp, 1, i, f_Dest);
+            }
+            fclose(f_Dest);
             fclose(f_Src);
-            return 2;
-        }
-        while((i = fread(tmp, 1, 4096, f_Src)) != 0)
-        {
-            fwrite(tmp, 1, i, f_Dest);
-        }
-        fclose(f_Dest);
-        fclose(f_Src);
-	    unlink(nameSource);
+		    unlink(path_Src);
+		}
+		// Else it's a directory and we throw the recursive function on it
+		else if ( S_ISDIR(file_stat.st_mode) ){
+		    recursiveMv(path_Src,path_Dest);
+		}
 	}
-	else printf("mv : file/directory %s doesn't exist\n",nameSource);
-    
-    // Directory closure
-    //closedir(destination);
-    // Directory closure
-    //closedir(source);
+	
+	if(rmdir(nameSource)!=0) printf("rm : directory %s doesn't exist\n",nameSource);
     	
 	return 0;
 }

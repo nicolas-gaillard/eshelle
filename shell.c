@@ -149,12 +149,5 @@ int main(int argc, char const *argv[]) {
     		}	
     	}
 	}
-
-	free(currentDir);
-	free(keyboarding);
-	free(hostName);
-	free(command);
-	free(argCommand);
-
 	return 0;
 }

@@ -1,6 +1,10 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "IS_file.c"
+#include "IS_file.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 /*
@@ -12,7 +16,7 @@
 	Description : 
 		changes the current repertory
 */
-int main(int argc,char *argv[]){
+int cd(int argc,char *argv[]){
 	
 	// An error is displayed if there is too few arguments
 	if(argc<2){
@@ -30,7 +34,7 @@ int main(int argc,char *argv[]){
 		if(isFolder(argv[1])){
 			printf("cd : Test : Repertoire courant avant : %s\n",get_current_dir_name());
 			chdir(argv[1]);
-			printf("cd : Test : Repertoire courant après : %s\n",get_current_dir_name());
+			printf("cd : Test : Repertoire courant aprï¿½s : %s\n",get_current_dir_name());
 		}
 		else{
 			printf("cd : directory %s doesn't exist\n",argv[1]);

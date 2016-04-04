@@ -1,6 +1,10 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "IS_file.c"
+#include "IS_file.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <time.h>
@@ -86,7 +90,7 @@ void advancedDisplay(struct dirent *dptr,int dflag){
 	Description : 
 		displays the current repertory's content
 */
-int main(int argc,char *argv[]){      
+int ls(int argc,char *argv[]){      
 	// Declaration of variables	
 	DIR *dirp;						// the directory we want to know the content
     struct dirent *dptr;			// used to know the information of the directory

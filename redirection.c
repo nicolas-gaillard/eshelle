@@ -76,7 +76,7 @@ int andRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
 }
 
 int orRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
-	if (execute(cmdBeforeAnd == ERROR)){
+	if (execute(cmdBeforeAnd == ERROR_EXEC)){
 		return execute(cmdAfterAnd);
 	}
 }

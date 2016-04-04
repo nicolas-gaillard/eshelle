@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "shell.h"
+#include "redirection.h"
+#include "struct.h"
+#include "automation.h"
+
 // Inclure les libraries
-
-#define NUMBER_FONCTIONS 18
-
-char *functions[NUMBER_FONCTIONS] = 
-{"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
-"chgrp", "echo", "ps", "top", "su"};
 
 typedef struct {
 	char *nom;

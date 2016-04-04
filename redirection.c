@@ -5,6 +5,11 @@
 #include <sys/wait.h>
 #include <errno.h>
 
+#include "shell.h"
+#include "redirection.h"
+#include "struct.h"
+#include "automation.h"
+
 
 // Ne pas oublier de define des constantes pour chaque commandes
 // Ex : 
@@ -21,14 +26,7 @@
 
 // Free besoin que dans les mallocs
 
-#define SUCCESS 0
-#define ERROR 1
-#define ERROR_EXEC -1
-#define SIZE_BUFFER 30
-
-int hereCommands(char* redirection[]); 
-
-int executeHereCommands(char* redirection[], char *argCmd[]){
+int hereCommandsExecute(char* redirection[], char *argCmd[]){
 	// On utilise write dans une zone mémoire
 	// Une fois le délimiteur atteint
 	// On connecte la sortie avec le read du processus fils responsable
@@ -97,19 +95,6 @@ int execute(char* argCmd[]){
   	return 0;
 }
 
-void clean(const char *buffer, FILE *fp)
-{
-    char *p = strchr(buffer,'\n');
-    if (p != NULL)
-        *p = 0;
-    else
-    {
-        int c;
-        while ((c = fgetc(fp)) != '\n' && c != EOF);
-    }
-}
-
-
 
 // Background redirection : 
 // The father process doesn't wait the end of the child process to treat other commands
@@ -130,7 +115,7 @@ int backgroundExecute(char *argCmd[]){
 	return 0;
 }
 
-int andRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
+int andExecute(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
 	if (execute(cmdBeforeAnd) == SUCCESS){
 		return execute(cmdAfterAnd);
 	}
@@ -139,7 +124,7 @@ int andRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
 	}
 }
 
-int orRedirection(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
+int orExecute(char *cmdBeforeAnd[], char *cmdAfterAnd[]){
 	if (execute(cmdBeforeAnd) == ERROR_EXEC){
 		return execute(cmdAfterAnd);
 	}
@@ -156,31 +141,39 @@ int whatsThisRedirection(char *arg[]){
 	// Sinon on execute simplement la commande
 	if (strcmp(arg[0],">") == 0){
 		freopen(arg[1], "w", stdout);
-		return SUCCESS;
+		return SIMPLE_REDIRECTION;
 	}
 	else if (strcmp(arg[0], ">>") == 0){
 		freopen(arg[1], "a", stdout);
-		return SUCCESS;
+		return SIMPLE_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<") == 0){
 		freopen(arg[1], "r", stdin);
-		return SUCCESS;
+		return  SIMPLE_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<<") == 0){
-		int input = hereCommands(arg);
-		return input;
+		return HERE_COMMANDS;
 		// On écrit notre truc dans un fichier tant qu'on a pas le delimiter
 		// Une fois le delimiter coupé,
 		// On ouvre le fichier en reading
 	}
-	// else if (strcmp(arg[i], "||") == 0)
-	// else if (strcmp(arg[i], "&&") == 0)
-	// else if (strcmp(arg[i], "&") == 0)
-	// else if (strcmp(arg[i], ";") == 0)
+	else if (strcmp(arg[0], "|") == 0){
+		return PIPE;
+	}
+	else if (strcmp(arg[0], "||") == 0){
+		return OR;
+	}
+	else if (strcmp(arg[0], "&&") == 0){
+		return AND;
+	}
+	else if (strcmp(arg[0], "&") == 0){
+		return BACKGROUND;
+	}
 	else {
-		return ERROR;
+		return 0;
 	}
 }
+
 
 int hereCommands(char* redirection[]){
 	int descriptor[2];
@@ -188,20 +181,20 @@ int hereCommands(char* redirection[]){
 		perror("Can't create the pipe");
 	}
 
-	char delimiter[SIZE_BUFFER] = {""};
+	char buffer[SIZE_BUFFER] = {""};
 
-	while(delimiter != redirection[1]){
+	while(buffer != redirection[1]){
 		printf("> ");
-		fgets(delimiter, sizeof(delimiter), stdin);
-   		clean(delimiter, stdin);
-   		if (delimiter != redirection[1]){
-   			write(descriptor[1], delimiter, SIZE_BUFFER);
+		fgets(buffer, sizeof(buffer), stdin);
+   		clean(buffer, stdin);
+   		if (buffer != redirection[1]){
+   			write(descriptor[1], buffer, SIZE_BUFFER);
    		}
 	}
 	return descriptor[1];
 }
 
-int pipeRedirection(char *cmdBeforePipe[], char *cmdAfterPipe[]){
+int pipeExecute(char *cmdBeforePipe[], char *cmdAfterPipe[]){
 	// Create the pipe which will "connect" the two commands
 	int interim[2];
 

@@ -48,7 +48,7 @@ int testPipe(char *cmdBeforePipe, char *cmdAfterPipe, char *argv1, char *argv2){
 int main(int argc, char const *argv[])
 {
 	//char *test[] = {"-doc"};
-	char *test = "-doc";
+	//char *test = "-doc";
 	char *c1 = "/bin/ls";
 	char *c2 = "wc";
 	testPipe(c1, c2, "NULL", "NULL");

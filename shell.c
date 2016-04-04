@@ -5,14 +5,11 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#define _GNU_SOURCE
-#define BUFFER_KEYBOARDING 100
-#define BUFFER_PROMPT 30
-#define NUMBER_FONCTIONS 18
-#define SIZE_ARG 95
-#define SIZE_CMD 5
+#include "shell.h"
+#include "redirection.h"
+#include "struct.h"
+#include "automation.h"
 
-// WARNING : 
 
 char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",

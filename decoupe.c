@@ -100,6 +100,10 @@ int main(){
 			strcpy(tab[j][0], t[i]);
 			j++;
 		}
+		else if(t[i][0] == '&'){
+			strcpy(tab[j][0], t[i]);
+			j++;
+		}
 		else if((t[i][0] == '>' ) || (t[i][0] == '<')){
 			strcpy(tab[j][0], t[i]);
 			pred = 99;

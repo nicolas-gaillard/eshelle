@@ -58,7 +58,8 @@ int whatsThisRedirection(char *arg[]){
 }
 
 int exist(char *cmd, char *functions[]){
-	for (int i = 0; i < NUMBER_FONCTIONS; ++i)
+	int i;
+	for (i = 0; i < NUMBER_FONCTIONS; ++i)
 	{
 		if (strcmp(cmd, functions[i]) == 0){
 			return 0;

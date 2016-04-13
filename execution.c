@@ -117,20 +117,101 @@ void pipeExecute(char** commands[], int position, int inFD){
 		wait(NULL);
 		closePipe(pipeFD[1]);
 		closePipe(inFD);
-		execute(commands, position+1, pipeFD[0]);
+		execute(commands, position+2, pipeFD[0]);
 	}
 }
 
+void outExecute(char** commands[], int position, int inFD){
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(inFD, STDIN_FILENO);
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+		execvp(commands[position][0], commands[position]);
+		perror("exec failed ");
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		closePipe(inFD);
+		execute(commands, position+1, pipeFD[0]);
+	}	
+}
+
+// &&
+void andExecute(char** commands[], int position, int inFD){
+
+	int and = 0;
+
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(inFD, STDIN_FILENO);
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		// If the command failed
+		if (execvp(commands[position][0], commands[position]) == -1){
+			perror("exec failed ");
+			and = 1;
+		}
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		closePipe(inFD);
+
+		// The command was a success
+		if (and == 0){
+			execute(commands, position+2, pipeFD[0]);
+
+		}
+		// The command was not a success, we do not do the next after &&
+		else{
+			execute(commands, position+4, pipeFD[0]);
+
+		}
+	}	
+}
+
 void execute(char** commands[], int position, int inFD){
+	// This is not a function
+	if (exist(commands[position][0], functions) == 1){
+		execute(commands, position+1, pipeFD[0]);
+	}
 	// This is the last command to execute :
-	if ((commands[position + 1] == NULL)) {
+	else if ((commands[position + 1] == NULL)) {
 		//|| whatsThisRedirection(commands[position+1]) == 0
 		redirectFD(inFD, STDIN_FILENO);
 		execvp(commands[position][0], commands[position]);
 		perror("exec failed ");
 	}
+	// This is a commmand
 	else {
-		switch (whatsThisRedirection(commands[position+1]){
+		switch (whatsThisRedirection(commands[position+1])){
 			case SIMPLE_REDIRECTION :
 				break;
 

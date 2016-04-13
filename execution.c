@@ -7,13 +7,16 @@
 
 #define NUMBER_FONCTIONS 18
 #define ERROR 1
+#define SIZE_BUFFER 256
 
-#define SIMPLE_REDIRECTION 2
+#define SIMPLE_OUT_REDIRECTION 2
 #define HERE_COMMANDS 3
 #define PIPE 4
 #define AND 5
 #define OR 6
 #define BACKGROUND 7
+#define OUT_REDIRECTION 8
+#define IN_REDIRECTION 9
 
 static char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
@@ -21,18 +24,30 @@ static char *functions[NUMBER_FONCTIONS] =
 
 void execute(char** commands[], int position, int inFD);
 
+void clean(const char *buffer, FILE *fp)
+{
+    char *p = strchr(buffer,'\n');
+    if (p != NULL)
+        *p = 0;
+    else
+    {
+        int c;
+        while ((c = fgetc(fp)) != '\n' && c != EOF);
+    }
+}
+
 int whatsThisRedirection(char *arg[]){
 	if (strcmp(arg[0],">") == 0){
 		//freopen(arg[1], "w", stdout);
-		return SIMPLE_REDIRECTION;
+		return SIMPLE_OUT_REDIRECTION;
 	}
 	else if (strcmp(arg[0], ">>") == 0){
 		//freopen(arg[1], "a", stdout);
-		return SIMPLE_REDIRECTION;
+		return OUT_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<") == 0){
 		//freopen(arg[1], "r", stdin);
-		return  SIMPLE_REDIRECTION;
+		return  IN_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<<") == 0){
 		return HERE_COMMANDS;
@@ -90,6 +105,26 @@ void redirectFD(int oldFd, int newFd){
 			closePipe(oldFd);
 		}
 	}
+}
+
+// == <<
+int hereCommands(char* redirection[]){
+	int descriptor[2];
+	if (pipe(descriptor) != 0){
+		perror("Can't create the pipe");
+	}
+
+	char buffer[SIZE_BUFFER] = {""};
+
+	while(buffer != redirection[1]){
+		printf("> ");
+		fgets(buffer, sizeof(buffer), stdin);
+   		clean(buffer, stdin);
+   		if (buffer != redirection[1]){
+   			write(descriptor[1], buffer, SIZE_BUFFER);
+   		}
+	}
+	return descriptor[1];
 }
 
 void pipeExecute(char** commands[], int position, int inFD){
@@ -189,7 +224,53 @@ void andExecute(char** commands[], int position, int inFD){
 			execute(commands, position+2, pipeFD[0]);
 
 		}
-		// The command was not a success, we do not do the next after &&
+		// The command wasn't a success, we do not execute the next after &&
+		else{
+			execute(commands, position+4, pipeFD[0]);
+
+		}
+	}	
+}
+
+// ||
+void orExecute(char** commands[], int position, int inFD){
+
+	int or = 1;
+
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(inFD, STDIN_FILENO);
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		// If the command failed
+		if (execvp(commands[position][0], commands[position]) == -1){
+			perror("exec failed ");
+			or = 0;
+		}
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		closePipe(inFD);
+
+		// The command wasn't a success, we execute the next one
+		if (or == 0){
+			execute(commands, position+2, pipeFD[0]);
+		}
+		// The command was a success, we do not execute the next after &&
 		else{
 			execute(commands, position+4, pipeFD[0]);
 
@@ -198,12 +279,12 @@ void andExecute(char** commands[], int position, int inFD){
 }
 
 void execute(char** commands[], int position, int inFD){
-	// This is not a function
+	// This is not a command
 	if (exist(commands[position][0], functions) == 1){
-		execute(commands, position+1, pipeFD[0]);
+		execute(commands, position+1, inFD);
 	}
 	// This is the last command to execute :
-	else if ((commands[position + 1] == NULL)) {
+	else if (commands[position + 1] == NULL) {
 		//|| whatsThisRedirection(commands[position+1]) == 0
 		redirectFD(inFD, STDIN_FILENO);
 		execvp(commands[position][0], commands[position]);
@@ -212,26 +293,31 @@ void execute(char** commands[], int position, int inFD){
 	// This is a commmand
 	else {
 		switch (whatsThisRedirection(commands[position+1])){
-			case SIMPLE_REDIRECTION :
+			case SIMPLE_OUT_REDIRECTION :
 				break;
 
-			case SIMPLE_REDIRECTION :
+			case OUT_REDIRECTION :
 				break;
 
 			case PIPE :
 				pipeExecute(commands, position, inFD);
 				break;
 
-			case SIMPLE_REDIRECTION :
+			case AND :
+				andExecute(commands, position, inFD);
 				break;
 
-			case SIMPLE_REDIRECTION :
+			case OR :
 				break;
 
-			case SIMPLE_REDIRECTION :
+			case BACKGROUND :
 				break;
 
-			case SIMPLE_REDIRECTION :
+			case HERE_COMMANDS :
+				execute(commands, position, hereCommands(commands[position+1]));
+				break;
+
+			case IN_REDIRECTION :
 				break;
 
 			// There isn't redirection

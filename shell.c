@@ -5,16 +5,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-#include "shell.h"
-#include "redirection.h"
-#include "struct.h"
-#include "automation.h"
-
-
-char *functions[NUMBER_FONCTIONS] = 
-{"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
-"chgrp", "echo", "ps", "top", "su"};
-
+#define BUFFER_KEYBOARDING 256
+#define BUFFER 50
+#define NUMBER_FONCTIONS 18
 /*
 shebang : #! puis script, permet de lancer un script
 */
@@ -91,15 +84,9 @@ int exist(char *c, char *t[]){
 
 // Rajouter la libération de ressources
 int main(int argc, char const *argv[]) {
-	char currentDir[BUFFER_PROMPT];
+	char currentDir[BUFFER];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
-	char hostName[BUFFER_PROMPT];
-
-	// Name of the command
-	// 5 is the max number of letters of a command
-	char command[SIZE_CMD];
-	// Arguments of the command
-	char *argCommand[SIZE_ARG];
+	char hostName[BUFFER];
 
 	// Clear the terminal 
 	clear();
@@ -115,15 +102,18 @@ int main(int argc, char const *argv[]) {
 		fgets(keyboarding, sizeof(keyboarding), stdin);
     	clean(keyboarding, stdin);
 
+    	// User wants to quit 
+    	if (strcmp(keyboarding,"quit") == 0){
+    		exit(0); // A modifier en fonction des sockets     		
+    	}
+
     	// Automate qui sépare la commande en :
     	// command = automate(keyboarding, argCommand);
     	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
 
     	// Checking the command :
-    	if (strcmp(command,"quit") == 0){
-    		// User wants to quit :
-    		exit(0); // A modifier en fonction des sockets     		
-    	}
+    	
+/*
     	else if (exist(command, functions) == 0){
     		// The command doesn't exist
     		perror("The command doesn't exist ");
@@ -145,6 +135,8 @@ int main(int argc, char const *argv[]) {
     			wait(status);
     		}	
     	}
+    */	
 	}
+
 	return 0;
 }

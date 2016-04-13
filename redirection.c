@@ -5,10 +5,33 @@
 #include <sys/wait.h>
 #include <errno.h>
 
-#include "shell.h"
-#include "redirection.h"
-#include "struct.h"
-#include "automation.h"
+#define SUCCESS 0
+#define ERROR 1
+#define ERROR_EXEC -1
+#define SIZE_BUFFER 30
+
+#define SIMPLE_REDIRECTION 2
+#define HERE_COMMANDS 4
+#define PIPE 3
+#define AND 5
+#define OR 6
+#define BACKGROUND 7
+
+int hereCommandsExecute(char* redirection[], char *argCmd[]);
+
+int execute(char* argCmd[]);
+
+int backgroundExecute(char *argCmd[]);
+
+int andExecute(char *cmdBeforeAnd[], char *cmdAfterAnd[]);
+
+int orExecute(char *cmdBeforeAnd[], char *cmdAfterAnd[]);
+
+int whatsThisRedirection(char *arg[]);
+
+int hereCommands(char* redirection[]);
+
+int pipeExecute(char *cmdBeforePipe[], char *cmdAfterPipe[]);
 
 
 // Ne pas oublier de define des constantes pour chaque commandes
@@ -25,6 +48,18 @@
 //#define INDEX_TO_SHIFT 0
 
 // Free besoin que dans les mallocs
+
+void clean(const char *buffer, FILE *fp)
+{
+    char *p = strchr(buffer,'\n');
+    if (p != NULL)
+        *p = 0;
+    else
+    {
+        int c;
+        while ((c = fgetc(fp)) != '\n' && c != EOF);
+    }
+}
 
 int hereCommandsExecute(char* redirection[], char *argCmd[]){
 	// On utilise write dans une zone mémoire
@@ -175,6 +210,7 @@ int whatsThisRedirection(char *arg[]){
 }
 
 
+// == <<
 int hereCommands(char* redirection[]){
 	int descriptor[2];
 	if (pipe(descriptor) != 0){
@@ -253,7 +289,8 @@ int main(int argc, char const *argv[])
 	//whatsThisRedirection(test);
 	//execute(cmd, 2);
 
-	execvp("ls", cmd);
+	//execvp("ls", cmd);
+	execute(cmd);
 
 	return 0;
 }

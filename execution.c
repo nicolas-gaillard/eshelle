@@ -350,17 +350,15 @@ int main(int argc, char const *argv[])
 	char* cmd1[] = { "ls" , "-l", NULL };
 	char** cmds[] = { cmd1, NULL };
 	
-	/*char* cmd1[] = { "ls" , "-l", NULL };
 	char* delim1[] = { "|" };
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* delim2[] = { "|" };
-	char* more[] = { "more", NULL };
-	char** cmds[] = { cmd1, delim1, cmd2, delim2, more, NULL };*/
+	char* cmd3[] = { "more", NULL };
+	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
-	/*char* cmd1[] = { "ls" , "-l", NULL };
-	char* delim1[] = { ">" };
-	char* cmd2[] = { "toto.txt", NULL, NULL };
-	char** cmds[] = { cmd1, delim1, cmd2, NULL };*/
+	char* delim3[] = { ">" };
+	char* fichier1[] = { "toto.txt", NULL, NULL };
+	//char** cmds[] = { cmd1, delim3, fichier1, NULL };
 
 	execute((char***)cmds, 0, STDIN_FILENO);	
 	return 0;

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #define NUMBER_FONCTIONS 18
 #define ERROR 1
@@ -107,7 +108,8 @@ void redirectFD(int oldFd, int newFd){
 	}
 }
 
-// == <<
+
+// <<
 int hereCommands(char* redirection[]){
 	int descriptor[2];
 	if (pipe(descriptor) != 0){
@@ -120,13 +122,14 @@ int hereCommands(char* redirection[]){
 		printf("> ");
 		fgets(buffer, sizeof(buffer), stdin);
    		clean(buffer, stdin);
-   		if (buffer != redirection[1]){
+   		if (strcmp(buffer, redirection[1]) != 0){
    			write(descriptor[1], buffer, SIZE_BUFFER);
    		}
 	}
 	return descriptor[1];
 }
 
+// |
 void pipeExecute(char** commands[], int position, int inFD){
 	// Creation of a pipe
 	int pipeFD[2];
@@ -183,6 +186,17 @@ void outExecute(char** commands[], int position, int inFD){
 		closePipe(inFD);
 		execute(commands, position+1, pipeFD[0]);
 	}	
+}
+
+// <
+void inExecute(char** commands[], int position, int inFD){
+	int fdIN;
+	if ((fdIN = open(commands[position+1][1], O_RDONLY)) == -1){
+		perror("Can't open the file ");
+		// ????
+		//exit(0);
+	}
+	execute(commands, position, fdIN);
 }
 
 // &&
@@ -308,6 +322,7 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			case OR :
+				orExecute(commands, position, inFD);
 				break;
 
 			case BACKGROUND :
@@ -318,6 +333,7 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			case IN_REDIRECTION :
+				inExecute(commands, position, (int)NULL);
 				break;
 
 			// There isn't redirection

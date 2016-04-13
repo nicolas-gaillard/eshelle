@@ -21,7 +21,7 @@
 
 static char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
-"chgrp", "echo", "ps", "top", "su"};
+"chgrp", "echo", "ps", "top", "su", "wc"};
 
 void execute(char** commands[], int position, int inFD);
 
@@ -141,7 +141,6 @@ void pipeExecute(char** commands[], int position, int inFD){
 	if ((pid = fork()) == -1){
 		perror("fork failed ");
 	}
-
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
@@ -333,7 +332,7 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			case IN_REDIRECTION :
-				inExecute(commands, position, (int)NULL);
+				inExecute(commands, position, inFD);
 				break;
 
 			// There isn't redirection
@@ -343,16 +342,25 @@ void execute(char** commands[], int position, int inFD){
 				perror("exec failed ");
 		}
 
-		pipeExecute(commands, position, inFD);
 	}
 }
 
 int main(int argc, char const *argv[])
 {
-	char* cmd1[] = { "ls" , NULL, NULL };
-	char* cmd2[] = { "grep", "sh", NULL };
+	char* cmd1[] = { "ls" , "-l", NULL };
+	char** cmds[] = { cmd1, NULL };
+	
+	/*char* cmd1[] = { "ls" , "-l", NULL };
+	char* delim1[] = { "|" };
+	char* cmd2[] = { "wc", NULL, NULL };
+	char* delim2[] = { "|" };
 	char* more[] = { "more", NULL };
-	char** cmds[] = { cmd1, cmd2, more, NULL };
+	char** cmds[] = { cmd1, delim1, cmd2, delim2, more, NULL };*/
+	
+	/*char* cmd1[] = { "ls" , "-l", NULL };
+	char* delim1[] = { ">" };
+	char* cmd2[] = { "toto.txt", NULL, NULL };
+	char** cmds[] = { cmd1, delim1, cmd2, NULL };*/
 
 	execute((char***)cmds, 0, STDIN_FILENO);	
 	return 0;

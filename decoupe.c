@@ -86,14 +86,8 @@ int main(){
  	while (t[i]!=NULL)
 	{
 		if(pred == 99){
-			if(strcmp(t[i],tab[j][0])==0){
-				strcpy(tab[j][1], t[i]);
-				j++;
-			}
-			else{
-				j++;
-				strcpy(tab[j][0], t[i]);	
-			}
+			strcpy(tab[j][1], t[i]);
+			j++;
 			pred = 0;
 			printf("je passe ici aussi \n");
 		}
@@ -135,8 +129,6 @@ int main(){
 	printf("tab[4][1] : %s \n",tab[4][1]);
 	printf("tab[5][0] : %s \n",tab[5][0]);
 	printf("tab[5][1] : %s \n",tab[5][1]);
-	printf("tab[6][0] : %s \n",tab[6][0]);
-	printf("tab[6][1] : %s \n",tab[6][1]);
 
 
 	int nbSousChaine = i;

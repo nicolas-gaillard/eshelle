@@ -30,6 +30,7 @@ void clean(const char *buffer, FILE *fp)
     char *p = strchr(buffer,'\n');
     if (p != NULL)
         *p = 0;
+    
     else
     {
         int c;
@@ -118,15 +119,21 @@ int hereCommands(char* redirection[]){
 
 	char buffer[SIZE_BUFFER] = {""};
 
-	while(buffer != redirection[1]){
+	while(1){
 		printf("> ");
 		fgets(buffer, sizeof(buffer), stdin);
    		clean(buffer, stdin);
-   		if (strcmp(buffer, redirection[1]) != 0){
-   			write(descriptor[1], buffer, SIZE_BUFFER);
+   		if (strcmp(buffer, redirection[1]) == 0){
+   			break;
    		}
+   		write(descriptor[1], buffer, SIZE_BUFFER);
 	}
 	return descriptor[1];
+}
+
+void hereExecute(char** commands[], int position){
+	int in = hereCommands(commands[position+1]);
+	execute(commands, position, in);
 }
 
 // |
@@ -158,7 +165,7 @@ void pipeExecute(char** commands[], int position, int inFD){
 	}
 }
 
-void outSimpleExecute(char** commands[], int position, int inFD){
+void outExecute(char** commands[], int position, int inFD){
 	// Creation of a pipe
 	int pipeFD[2];
 	if (pipe(pipeFD) != 0){
@@ -183,18 +190,20 @@ void outSimpleExecute(char** commands[], int position, int inFD){
 		// We 
 		redirectFD(fdOUT, STDOUT_FILENO);
 		execvp(commands[position][0], commands[position]);
-
-		// Then we 
-		//redirectFD(pipeFD[1], STDOUT_FILENO);
-
 		perror("exec failed ");
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+		if (fdOUT != -1){
+			close(fdOUT);
+		}
+
+		// Then we
 	}
 	// Parent process
 	else{
 		wait(NULL);
 		closePipe(pipeFD[1]);
 		closePipe(inFD);
-		execute(commands, position+1, pipeFD[0]);
+		execute(commands, position+2, pipeFD[0]);
 	}	
 }
 
@@ -211,7 +220,6 @@ void inExecute(char** commands[], int position, int inFD){
 
 // &&
 void andExecute(char** commands[], int position, int inFD){
-
 	int and = 0;
 
 	// Creation of a pipe
@@ -294,17 +302,20 @@ void orExecute(char** commands[], int position, int inFD){
 		if (or == 0){
 			execute(commands, position+2, pipeFD[0]);
 		}
-		// The command was a success, we do not execute the next after &&
+		// The command was a success, we do not execute the next after ||
 		else{
 			execute(commands, position+4, pipeFD[0]);
-
 		}
 	}	
 }
 
 void execute(char** commands[], int position, int inFD){
+	// There is no command, we exit
+	if (commands[position] == NULL){
+		exit(0);
+	}
 	// This is not a command
-	if (exist(commands[position][0], functions) == 1){
+	else if (exist(commands[position][0], functions) == 1){
 		execute(commands, position+1, inFD);
 	}
 	// This is the last command to execute :
@@ -318,11 +329,11 @@ void execute(char** commands[], int position, int inFD){
 	else {
 		switch (whatsThisRedirection(commands[position+1])){
 			case SIMPLE_OUT_REDIRECTION :
-				outSimpleExecute(commands, position, inFD);
+				//outSimpleExecute(commands, position, inFD);
 				break;
 
 			case OUT_REDIRECTION :
-				//outExecute(commands, position, inFD);
+				outExecute(commands, position, inFD);
 				break;
 
 			case PIPE :
@@ -341,7 +352,8 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			case HERE_COMMANDS :
-				execute(commands, position, hereCommands(commands[position+1]));
+				hereExecute(commands, position);
+				//execute(commands, position, hereCommands(commands[position+1]));
 				break;
 
 			case IN_REDIRECTION :
@@ -369,14 +381,17 @@ int main(int argc, char const *argv[])
 	char* cmd3[] = { "more", NULL };
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
-	char* delim3[] = { ">" , "toto.txt", NULL};
+	char* delim3[] = { ">>" , "toto.txt"};
 	char* delim4[] = { "<" , "toto.txt", NULL};
 	char* delim5[] = { "<<" , "stop", NULL};
 	//char* fichier1[] = { "toto.txt", NULL, NULL };
 	//char** cmds[] = { cmd1, delim3, fichier1, NULL };
 	
-	//char** cmds[] = {cmd1, delim3, NULL};
-	char** cmds[] = {cmd1, NULL};
+	char** cmds[] = {cmd1, delim3, NULL};
+	//char** cmds[] = {cmd1, NULL};
+
+	//char ** cmds[] = {cmd2, delim5, NULL};
+	//char ** cmds[] = {cmd2, delim4, NULL};
 
 	execute((char***)cmds, 0, STDIN_FILENO);	
 	return 0;

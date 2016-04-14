@@ -113,41 +113,10 @@ void redirectFD(int oldFd, int newFd){
 
 // <<
 int hereCommands(char* redirection[]){
-	/*
-	int descriptor[2];
-	if (pipe(descriptor) != 0){
-		perror("Can't create the pipe");
-	}
-*/
+	// This is the buffer which will contain the text 
 	char buffer[SIZE_BUFFER] = {""};
 
-	/*while(1){
-		printf("> ");
-		fgets(buffer, sizeof(buffer), stdin);
-   		clean(buffer, stdin);
-   		scanf("%s", buffer);
-   		if (strcmp(buffer, redirection[1]) == 0){
-   			break;
-   		}
-   		strcat(buffer,"\n");
-   		write(descriptor[1], buffer, SIZE_BUFFER);
-	}
-	*/
-	/*
-	while(1){
-		printf("> ");
-		fgets(buffer, sizeof(buffer), stdin);
-   		char *tab=malloc(sizeof(buffer));
-   		strcpy(tab,buffer);
-   		clean(tab, stdin);
-   		if (strcmp(tab, redirection[1]) == 0){
-   			break;
-   		}
-   		write(descriptor[1], buffer, SIZE_BUFFER);
-   		free(tab);
-	}
-	*/
-
+	// We open a temporary file 
 	FILE* tmp = tmpfile();
 	while(1){
 		printf("> ");
@@ -156,12 +125,14 @@ int hereCommands(char* redirection[]){
 		if (strcmp(buffer, redirection[1]) == 0){
    			break;
    		}
+   		// clean() removes \n, we have to add it to have a good display
    		strcat(buffer, "\n");
    		fputs(buffer, tmp);
 	}
+	// We go back to the beginning of the file
 	rewind(tmp);
+	// Fileno returns the file descriptor of the temporary file
 	return fileno(tmp);
-	//return descriptor[0];
 }
 
 void hereExecute(char** commands[], int position){
@@ -323,7 +294,7 @@ void inExecute(char** commands[], int position){
 
 // &&
 void andExecute(char** commands[], int position, int inFD){
-	int and = 0;
+	int et = 0;
 
 	// Creation of a pipe
 	int pipeFD[2];
@@ -345,7 +316,7 @@ void andExecute(char** commands[], int position, int inFD){
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){
 			perror("exec failed ");
-			and = 1;
+			et = 1;
 		}
 	}
 	// Parent process
@@ -355,13 +326,13 @@ void andExecute(char** commands[], int position, int inFD){
 		closePipe(inFD);
 
 		// The command was a success
-		if (and == 0){
-			execute(commands, position+2, pipeFD[0]);
+		if (et == 0){
+			execute(commands, position+1, STDIN_FILENO);
 
 		}
 		// The command wasn't a success, we do not execute the next after &&
 		else{
-			execute(commands, position+4, pipeFD[0]);
+			execute(commands, position+3, STDIN_FILENO);
 
 		}
 	}	
@@ -370,7 +341,7 @@ void andExecute(char** commands[], int position, int inFD){
 // ||
 void orExecute(char** commands[], int position, int inFD){
 
-	int or = 1;
+	int ou = 1;
 
 	// Creation of a pipe
 	int pipeFD[2];
@@ -392,7 +363,7 @@ void orExecute(char** commands[], int position, int inFD){
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){
 			perror("exec failed ");
-			or = 0;
+			ou = 0;
 		}
 	}
 	// Parent process
@@ -402,8 +373,8 @@ void orExecute(char** commands[], int position, int inFD){
 		closePipe(inFD);
 
 		// The command wasn't a success, we execute the next one
-		if (or == 0){
-			execute(commands, position+2, pipeFD[0]);
+		if (ou == 0){
+			execute(commands, position+2, STDIN_FILENO);
 		}
 		// The command was a success, we do not execute the next after ||
 		else{
@@ -479,10 +450,11 @@ int main(int argc, char const *argv[])
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* cmd3[] = { "more", NULL };
 	char* cmd4[] = { "cat", NULL};
+	char* cmd5[] = {"ls", "-,", NULL};
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
-	char* delim1[] = { "|" };
-	char* delim2[] = { "|" };
+	char* delim1[] = { "||" };
+	char* delim2[] = { "&&" };
 	char* delim3[] = { ">>" , "toto.txt"};
 	char* delim4[] = { "<" , "toto.txt", NULL};
 	char* delim5[] = { "<<" , "stop", NULL};
@@ -494,13 +466,16 @@ int main(int argc, char const *argv[])
 	//char** cmds[] = {cmd1, delim3, NULL};
 	//char** cmds[] = {cmd1, NULL};
 	//char** cmds[] = { cmd1, NULL };
-	char ** cmds[] = {cmd4, delim5, NULL};
+	//char ** cmds[] = {cmd4, delim5, NULL};
 	//char ** cmds[] = {cmd4, delim4, NULL};
 	//char ** cmd2[] = {cmd1, delim6, NULL};
 
 	//execute((char***)cmds, 0, STDIN_FILENO);
 	//execute((char***)cmds, 0, STDIN_FILENO);
 	//execute((char***)cmds, 0, STDIN_FILENO);
+
+	char** cmds[] = {cmd5, delim2, cmd1};
+
 	execute((char***)cmds, 0, STDIN_FILENO);
 	return 0;
 }

@@ -135,7 +135,37 @@ int hereCommands(char* redirection[]){
 
 void hereExecute(char** commands[], int position){
 	int in = hereCommands(commands[position+1]);
-	execute(commands, position, in);
+
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(in, STDIN_FILENO);
+
+		if (commands[position+2] != NULL){
+			redirectFD(pipeFD[1], STDOUT_FILENO);
+		}
+
+		execvp(commands[position][0], commands[position]);
+		perror("exec failed ");
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		closePipe(in);
+		execute(commands, position+2, pipeFD[0]);
+	}
+
 }
 
 // |
@@ -243,8 +273,11 @@ void inExecute(char** commands[], int position){
 	if (pid == 0){
 		closePipe(pipeFD[0]);
 		redirectFD(fdIN, STDIN_FILENO);
-		//freopen(commands[position+1][1], "r", stdin);
-		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		if (commands[position+2] != NULL){
+			redirectFD(pipeFD[1], STDOUT_FILENO);
+		}
+
 		execvp(commands[position][0], commands[position]);
 		perror("exec failed ");
 	}
@@ -438,9 +471,5 @@ int main(int argc, char const *argv[])
 	//execute((char***)cmds, 0, STDIN_FILENO);
 	//execute((char***)cmds, 0, STDIN_FILENO);
 	execute((char***)cmds, 0, STDIN_FILENO);
-
-
-
-
 	return 0;
 }

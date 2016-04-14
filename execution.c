@@ -24,6 +24,8 @@ static char *functions[NUMBER_FONCTIONS] =
 "chgrp", "echo", "ps", "top", "su", "wc"};
 
 void execute(char** commands[], int position, int inFD);
+void outExecute(char** commands[], int position, int inFD);
+void outSimpleExecute(char** commands[], int position, int inFD);
 
 void clean(const char *buffer, FILE *fp)
 {
@@ -165,6 +167,17 @@ void pipeExecute(char** commands[], int position, int inFD){
 	}
 }
 
+// >
+void outSimpleExecute(char** commands[], int position, int inFD){
+	// We can replace F_OK by W_OK to check if we can write in the file ???
+	if (access(commands[position+1][1], F_OK) != -1){
+		// The file exists, we remove it 
+		unlink(commands[position+1][1]);
+	}
+	outExecute(commands, position, inFD);
+}
+
+// >>
 void outExecute(char** commands[], int position, int inFD){
 	// Creation of a pipe
 	int pipeFD[2];
@@ -208,14 +221,15 @@ void outExecute(char** commands[], int position, int inFD){
 }
 
 // <
-void inExecute(char** commands[], int position, int inFD){
+void inExecute(char** commands[], int position){
 	int fdIN;
 	if ((fdIN = open(commands[position+1][1], O_RDONLY)) == -1){
 		perror("Can't open the file ");
 		// ????
-		//exit(0);
+		exit(0);
 	}
 	execute(commands, position, fdIN);
+	close(fdIN);
 }
 
 // &&
@@ -329,7 +343,7 @@ void execute(char** commands[], int position, int inFD){
 	else {
 		switch (whatsThisRedirection(commands[position+1])){
 			case SIMPLE_OUT_REDIRECTION :
-				//outSimpleExecute(commands, position, inFD);
+				outSimpleExecute(commands, position, inFD);
 				break;
 
 			case OUT_REDIRECTION :
@@ -357,7 +371,7 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			case IN_REDIRECTION :
-				inExecute(commands, position, inFD);
+				inExecute(commands, position);
 				break;
 
 			// There isn't redirection
@@ -373,26 +387,35 @@ void execute(char** commands[], int position, int inFD){
 int main(int argc, char const *argv[])
 {
 	char* cmd1[] = { "ls" , "-l", NULL };
-	//char** cmds[] = { cmd1, NULL };
-	
-	char* delim1[] = { "|" };
 	char* cmd2[] = { "wc", NULL, NULL };
-	char* delim2[] = { "|" };
 	char* cmd3[] = { "more", NULL };
+	char* cmd4[] = { "cat", NULL, NULL};
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
+	char* delim1[] = { "|" };
+	char* delim2[] = { "|" };
 	char* delim3[] = { ">>" , "toto.txt"};
 	char* delim4[] = { "<" , "toto.txt", NULL};
 	char* delim5[] = { "<<" , "stop", NULL};
+	char* delim6[] = { ">" , "toto.txt"};
 	//char* fichier1[] = { "toto.txt", NULL, NULL };
+
+
 	//char** cmds[] = { cmd1, delim3, fichier1, NULL };
-	
-	char** cmds[] = {cmd1, delim3, NULL};
+	//char** cmds[] = {cmd1, delim3, NULL};
 	//char** cmds[] = {cmd1, NULL};
-
+	//char** cmds[] = { cmd1, NULL };
 	//char ** cmds[] = {cmd2, delim5, NULL};
-	//char ** cmds[] = {cmd2, delim4, NULL};
+	char ** cmds[] = {cmd4, delim4, NULL};
+	//char ** cmd2[] = {cmd1, delim6, NULL};
 
-	execute((char***)cmds, 0, STDIN_FILENO);	
+	//execute((char***)cmds, 0, STDIN_FILENO);
+	//execute((char***)cmds, 0, STDIN_FILENO);
+	//execute((char***)cmds, 0, STDIN_FILENO);
+	execute((char***)cmds, 0, STDIN_FILENO);
+
+
+
+
 	return 0;
 }

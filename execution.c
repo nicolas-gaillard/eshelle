@@ -7,6 +7,7 @@
 #include <fcntl.h>
 
 #define NUMBER_FONCTIONS 18
+#define NUMBER_REDIRECTION 7
 #define ERROR 1
 #define SIZE_BUFFER 256
 
@@ -22,6 +23,9 @@
 static char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
 "chgrp", "echo", "ps", "top", "su", "wc"};
+
+static char *redirections[NUMBER_REDIRECTION] =
+{"<", ">", ">>", "<<", "&&", "||", "|"};
 
 void execute(char** commands[], int position, int inFD);
 void outExecute(char** commands[], int position, int inFD);
@@ -77,7 +81,7 @@ int whatsThisRedirection(char *arg[]){
 
 int exist(char *cmd, char *functions[]){
 	int i;
-	for (i = 0; i < NUMBER_FONCTIONS; ++i)
+	for (i = 0; i < NUMBER_REDIRECTION; ++i)
 	{
 		if (strcmp(cmd, functions[i]) == 0){
 			return 0;
@@ -340,7 +344,7 @@ void andExecute(char** commands[], int position, int inFD){
 
 // ||
 void orExecute(char** commands[], int position, int inFD){
-
+	/*
 	int ou = 1;
 
 	// Creation of a pipe
@@ -381,15 +385,48 @@ void orExecute(char** commands[], int position, int inFD){
 			execute(commands, position+4, pipeFD[0]);
 		}
 	}	
+*/
+	//int ou = 1;
+
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(inFD, STDIN_FILENO);
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		// If the command failed
+		if (execvp(commands[position][0], commands[position]) == -1){
+			perror("exec failed ");	
+		}
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		closePipe(inFD);
+		execute(commands, position+4, STDOUT_FILENO);
+	}	
 }
+
 
 void execute(char** commands[], int position, int inFD){
 	// There is no command, we exit
 	if (commands[position] == NULL){
 		exit(0);
 	}
-	// This is not a command
-	else if (exist(commands[position][0], functions) == 1){
+	// This is a redirection
+	else if (exist(commands[position][0], redirections) == 0){
 		execute(commands, position+1, inFD);
 	}
 	// This is the last command to execute :
@@ -451,6 +488,7 @@ int main(int argc, char const *argv[])
 	char* cmd3[] = { "more", NULL };
 	char* cmd4[] = { "cat", NULL};
 	char* cmd5[] = {"ls", "-,", NULL};
+	char* cmd6[] = { "cat", "mdr.txt", NULL};
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
 	char* delim1[] = { "||" };
@@ -474,7 +512,7 @@ int main(int argc, char const *argv[])
 	//execute((char***)cmds, 0, STDIN_FILENO);
 	//execute((char***)cmds, 0, STDIN_FILENO);
 
-	char** cmds[] = {cmd5, delim2, cmd1};
+	char** cmds[] = {cmd5, delim1, cmd1};
 
 	execute((char***)cmds, 0, STDIN_FILENO);
 	return 0;

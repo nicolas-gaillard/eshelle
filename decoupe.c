@@ -62,7 +62,7 @@ int main(){
 
 	printf("Début du découpage n°1 \n");
 
-	char command[] = "ls -al | texte | cat > texte.txt";
+	char command[] = "ls -al | texte | cat >> texte.txt";
 
 	char *decoupe[20];
 
@@ -86,8 +86,14 @@ int main(){
  	while (t[i]!=NULL)
 	{
 		if(pred == 99){
-			strcpy(tab[j][1], t[i]);
-			j++;
+			if(strcmp(t[i],tab[j][0])==0){
+				strcpy(tab[j][1], t[i]);
+				j++;
+			}
+			else{
+				j++;
+				strcpy(tab[j][0], t[i]);	
+			}
 			pred = 0;
 			printf("je passe ici aussi \n");
 		}
@@ -129,9 +135,12 @@ int main(){
 	printf("tab[4][1] : %s \n",tab[4][1]);
 	printf("tab[5][0] : %s \n",tab[5][0]);
 	printf("tab[5][1] : %s \n",tab[5][1]);
+	printf("tab[6][0] : %s \n",tab[6][0]);
+	printf("tab[6][1] : %s \n",tab[6][1]);
 
 
 	int nbSousChaine = i;
-	printf("nombre de chaine : %d\n",i);
+	printf("nombre de chaine : %d\n",nbSousChaine);
  
+ 	return 0;
 }

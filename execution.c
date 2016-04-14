@@ -298,7 +298,6 @@ void inExecute(char** commands[], int position){
 
 // &&
 void andExecute(char** commands[], int position, int inFD){
-	int et = 0;
 
 	// Creation of a pipe
 	int pipeFD[2];
@@ -320,18 +319,19 @@ void andExecute(char** commands[], int position, int inFD){
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){
 			perror("exec failed ");
-			et = 1;
 		}
 	}
 	// Parent process
 	else{
-		wait(NULL);
+		int status;
+		wait(&status);
+		
 		closePipe(pipeFD[1]);
 		closePipe(inFD);
 
-		// The command was a success
-		if (et == 0){
-			execute(commands, position+1, STDIN_FILENO);
+		// The command wasn't a success, we execute the next one
+		if (status > 0){
+			execute(commands, position+2, STDIN_FILENO);
 
 		}
 		// The command wasn't a success, we do not execute the next after &&
@@ -344,8 +344,6 @@ void andExecute(char** commands[], int position, int inFD){
 
 // ||
 void orExecute(char** commands[], int position, int inFD){
-	/*
-	int ou = 1;
 
 	// Creation of a pipe
 	int pipeFD[2];
@@ -361,61 +359,31 @@ void orExecute(char** commands[], int position, int inFD){
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
-		redirectFD(inFD, STDIN_FILENO);
-		redirectFD(pipeFD[1], STDOUT_FILENO);
+		//redirectFD(inFD, STDIN_FILENO);
+		//redirectFD(pipeFD[1], STDOUT_FILENO);
 
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){
 			perror("exec failed ");
-			ou = 0;
 		}
+		
 	}
 	// Parent process
 	else{
-		wait(NULL);
+		int status;
+		wait(&status);
+		
 		closePipe(pipeFD[1]);
 		closePipe(inFD);
 
 		// The command wasn't a success, we execute the next one
-		if (ou == 0){
+		if (status == 0){
 			execute(commands, position+2, STDIN_FILENO);
 		}
 		// The command was a success, we do not execute the next after ||
 		else{
-			execute(commands, position+4, pipeFD[0]);
+			execute(commands, position+3, pipeFD[0]);
 		}
-	}	
-*/
-	//int ou = 1;
-
-	// Creation of a pipe
-	int pipeFD[2];
-	if (pipe(pipeFD) != 0){
-		perror("pipe failed ");
-	}
-	// Creation of a child process
-	int pid;
-	if ((pid = fork()) == -1){
-		perror("fork failed ");
-	}
-
-	// Child process :
-	if (pid == 0){
-		closePipe(pipeFD[0]);
-		redirectFD(inFD, STDIN_FILENO);
-		redirectFD(pipeFD[1], STDOUT_FILENO);
-
-		// If the command failed
-		if (execvp(commands[position][0], commands[position]) == -1){
-			perror("exec failed ");	
-		}
-	}
-	// Parent process
-	else{
-		wait(NULL);
-		closePipe(pipeFD[1]);
-		closePipe(inFD);
-		execute(commands, position+4, STDOUT_FILENO);
 	}	
 }
 
@@ -487,7 +455,7 @@ int main(int argc, char const *argv[])
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* cmd3[] = { "more", NULL };
 	char* cmd4[] = { "cat", NULL};
-	char* cmd5[] = {"ls", "-,", NULL};
+	char* cmd5[] = {"jgkjb", "-,", NULL}; // Test && et ||
 	char* cmd6[] = { "cat", "mdr.txt", NULL};
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	

@@ -314,7 +314,9 @@ void andExecute(char** commands[], int position, int inFD){
 	if (pid == 0){
 		closePipe(pipeFD[0]);
 		redirectFD(inFD, STDIN_FILENO);
-		redirectFD(pipeFD[1], STDOUT_FILENO);
+		if (commands[position+2] != NULL){
+			redirectFD(pipeFD[1], STDOUT_FILENO);
+		}
 
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){
@@ -359,8 +361,10 @@ void orExecute(char** commands[], int position, int inFD){
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
-		//redirectFD(inFD, STDIN_FILENO);
-		//redirectFD(pipeFD[1], STDOUT_FILENO);
+		redirectFD(inFD, STDIN_FILENO);
+		if (commands[position+2] != NULL){
+			redirectFD(pipeFD[1], STDOUT_FILENO);
+		}
 
 		// If the command failed
 		if (execvp(commands[position][0], commands[position]) == -1){

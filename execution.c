@@ -158,7 +158,7 @@ void pipeExecute(char** commands[], int position, int inFD){
 	}
 }
 
-void outExecute(char** commands[], int position, int inFD){
+void outSimpleExecute(char** commands[], int position, int inFD){
 	// Creation of a pipe
 	int pipeFD[2];
 	if (pipe(pipeFD) != 0){
@@ -174,8 +174,19 @@ void outExecute(char** commands[], int position, int inFD){
 	if (pid == 0){
 		closePipe(pipeFD[0]);
 		redirectFD(inFD, STDIN_FILENO);
-		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		// First, we open the file
+		int fdOUT;
+		if ((fdOUT = open(commands[position+1][1], O_RDWR|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR)) == -1){
+			perror("Can't open the file ");
+		}
+		// We 
+		redirectFD(fdOUT, STDOUT_FILENO);
 		execvp(commands[position][0], commands[position]);
+
+		// Then we 
+		//redirectFD(pipeFD[1], STDOUT_FILENO);
+
 		perror("exec failed ");
 	}
 	// Parent process
@@ -307,9 +318,11 @@ void execute(char** commands[], int position, int inFD){
 	else {
 		switch (whatsThisRedirection(commands[position+1])){
 			case SIMPLE_OUT_REDIRECTION :
+				outSimpleExecute(commands, position, inFD);
 				break;
 
 			case OUT_REDIRECTION :
+				//outExecute(commands, position, inFD);
 				break;
 
 			case PIPE :
@@ -348,7 +361,7 @@ void execute(char** commands[], int position, int inFD){
 int main(int argc, char const *argv[])
 {
 	char* cmd1[] = { "ls" , "-l", NULL };
-	char** cmds[] = { cmd1, NULL };
+	//char** cmds[] = { cmd1, NULL };
 	
 	char* delim1[] = { "|" };
 	char* cmd2[] = { "wc", NULL, NULL };
@@ -356,9 +369,14 @@ int main(int argc, char const *argv[])
 	char* cmd3[] = { "more", NULL };
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
-	char* delim3[] = { ">" };
-	char* fichier1[] = { "toto.txt", NULL, NULL };
+	char* delim3[] = { ">" , "toto.txt", NULL};
+	char* delim4[] = { "<" , "toto.txt", NULL};
+	char* delim5[] = { "<<" , "stop", NULL};
+	//char* fichier1[] = { "toto.txt", NULL, NULL };
 	//char** cmds[] = { cmd1, delim3, fichier1, NULL };
+	
+	//char** cmds[] = {cmd1, delim3, NULL};
+	char** cmds[] = {cmd1, NULL};
 
 	execute((char***)cmds, 0, STDIN_FILENO);	
 	return 0;

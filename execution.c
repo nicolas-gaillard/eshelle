@@ -27,8 +27,7 @@ void execute(char** commands[], int position, int inFD);
 void outExecute(char** commands[], int position, int inFD);
 void outSimpleExecute(char** commands[], int position, int inFD);
 
-void clean(const char *buffer, FILE *fp)
-{
+void clean(const char *buffer, FILE *fp){
     char *p = strchr(buffer,'\n');
     if (p != NULL)
         *p = 0;
@@ -114,23 +113,55 @@ void redirectFD(int oldFd, int newFd){
 
 // <<
 int hereCommands(char* redirection[]){
+	/*
 	int descriptor[2];
 	if (pipe(descriptor) != 0){
 		perror("Can't create the pipe");
 	}
-
+*/
 	char buffer[SIZE_BUFFER] = {""};
 
-	while(1){
+	/*while(1){
 		printf("> ");
 		fgets(buffer, sizeof(buffer), stdin);
    		clean(buffer, stdin);
+   		scanf("%s", buffer);
    		if (strcmp(buffer, redirection[1]) == 0){
    			break;
    		}
+   		strcat(buffer,"\n");
    		write(descriptor[1], buffer, SIZE_BUFFER);
 	}
-	return descriptor[1];
+	*/
+	/*
+	while(1){
+		printf("> ");
+		fgets(buffer, sizeof(buffer), stdin);
+   		char *tab=malloc(sizeof(buffer));
+   		strcpy(tab,buffer);
+   		clean(tab, stdin);
+   		if (strcmp(tab, redirection[1]) == 0){
+   			break;
+   		}
+   		write(descriptor[1], buffer, SIZE_BUFFER);
+   		free(tab);
+	}
+	*/
+
+	FILE* tmp = tmpfile();
+	while(1){
+		printf("> ");
+		fgets(buffer, sizeof(buffer), stdin);
+		clean(buffer, stdin);
+		if (strcmp(buffer, redirection[1]) == 0){
+   			break;
+   		}
+   		strcat(buffer, "\n");
+   		fputs(buffer, tmp);
+	}
+	rewind(tmp);
+	return fileno(tmp);
+	//return descriptor[0];
 }
 
 void hereExecute(char** commands[], int position){
@@ -447,7 +478,7 @@ int main(int argc, char const *argv[])
 	char* cmd1[] = { "ls" , "-l", NULL };
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* cmd3[] = { "more", NULL };
-	char* cmd4[] = { "cat", NULL, NULL};
+	char* cmd4[] = { "cat", NULL};
 	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
 	
 	char* delim1[] = { "|" };
@@ -463,8 +494,8 @@ int main(int argc, char const *argv[])
 	//char** cmds[] = {cmd1, delim3, NULL};
 	//char** cmds[] = {cmd1, NULL};
 	//char** cmds[] = { cmd1, NULL };
-	//char ** cmds[] = {cmd2, delim5, NULL};
-	char ** cmds[] = {cmd4, delim4, NULL};
+	char ** cmds[] = {cmd4, delim5, NULL};
+	//char ** cmds[] = {cmd4, delim4, NULL};
 	//char ** cmd2[] = {cmd1, delim6, NULL};
 
 	//execute((char***)cmds, 0, STDIN_FILENO);

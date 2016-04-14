@@ -228,8 +228,33 @@ void inExecute(char** commands[], int position){
 		// ????
 		exit(0);
 	}
-	execute(commands, position, fdIN);
-	close(fdIN);
+
+	// Creation of a pipe
+	int pipeFD[2];
+	if (pipe(pipeFD) != 0){
+		perror("pipe failed ");
+	}
+	// Creation of a child process
+	int pid;
+	if ((pid = fork()) == -1){
+		perror("fork failed ");
+	}
+	// Child process :
+	if (pid == 0){
+		closePipe(pipeFD[0]);
+		redirectFD(fdIN, STDIN_FILENO);
+		//freopen(commands[position+1][1], "r", stdin);
+		redirectFD(pipeFD[1], STDOUT_FILENO);
+		execvp(commands[position][0], commands[position]);
+		perror("exec failed ");
+	}
+	// Parent process
+	else{
+		wait(NULL);
+		closePipe(pipeFD[1]);
+		close(fdIN);
+		execute(commands, position+2, pipeFD[0]);
+	}
 }
 
 // &&

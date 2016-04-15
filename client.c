@@ -21,6 +21,7 @@ int main(void)
     SOCKET sock;
     SOCKADDR_IN sin;
     char buffer[32] = "";
+    int sock_err;
  
     /* Création de la socket */
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -36,8 +37,16 @@ int main(void)
         printf("Connection à %s sur le port %d\n", inet_ntoa(sin.sin_addr), htons(sin.sin_port));
         
         /* Si l'on reçoit des informations : on les affiche à l'écran */
+        
+        printf("Tapez une phrase : \n");
+        fgets(buffer, sizeof buffer, stdin);
+        
+        sock_err = send(sock, buffer, 32, 0);
+        /*
         if(recv(sock, buffer, 32, 0) != SOCKET_ERROR)
             printf("Recu : %s\n", buffer);
+        */
+
     }
     /* sinon, on affiche "Impossible de se connecter" */
     else

@@ -50,21 +50,27 @@ int main(void)
             /* Si la socket fonctionne */
             if(sock_err != SOCKET_ERROR)
             {
+                /*
                 printf("Tapez une phrase : \n");
                 fgets(buffer, sizeof buffer, stdin);
-                
+                */
+
                 /* Attente pendant laquelle le client se connecte */
                 printf("Patientez pendant que le client se connecte sur le port %d...\n", PORT);        
 
                 csock = accept(sock, (SOCKADDR*)&csin, &recsize);
                 printf("Un client se connecte avec la socket %d de %s:%d\n", csock, inet_ntoa(csin.sin_addr), htons(csin.sin_port));
 
-                sock_err = send(csock, buffer, 32, 0);
+                if(recv(csock, buffer, 32, 0) != SOCKET_ERROR)
+                    printf("Recu : %s\n", buffer);
+
+                /*sock_err = send(csock, buffer, 32, 0);
 
                 if(sock_err != SOCKET_ERROR)
                     printf("Chaine envoyée : %s\n", buffer);
                 else
                     printf("Erreur de transmission\n");
+                */
 
                 /* Il ne faut pas oublier de fermer la connexion (fermée dans les deux sens) */
                 shutdown(csock, 2);

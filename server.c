@@ -15,7 +15,32 @@
 typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
- 
+
+void doprocessing (int sock) {
+   int n;
+   char buffer[256];
+   bzero(buffer,256);
+   //On lit le message envoyé par le client sur le socket
+   n = read(sock,buffer,255);
+   
+   //Si on ne peut pas lire depuis le socket
+   if (n < 0) {
+      perror("Impossible de lire depuis le socket");
+      exit(1);
+   }
+   
+   // On ecrit dans le socket "message recu", donc le client recevra ce message en utilisant recv
+   printf("Message : %s\n",buffer);
+   n = write(sock,"Message reçu",18);
+   
+   if (n < 0) {
+      perror("Impossible d'écrire vers le socket");
+      exit(1);
+   }
+    
+}
+
+
 int main(void)
 {
  
@@ -25,7 +50,7 @@ int main(void)
     SOCKADDR_IN csin;
     char buffer[32] = "";
     socklen_t recsize = sizeof(csin);
-    int sock_err;
+    int sock_err, pid;   
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -50,30 +75,38 @@ int main(void)
             /* Si la socket fonctionne */
             if(sock_err != SOCKET_ERROR)
             {
-                /*
-                printf("Tapez une phrase : \n");
-                fgets(buffer, sizeof buffer, stdin);
-                */
-
                 /* Attente pendant laquelle le client se connecte */
                 printf("Patientez pendant que le client se connecte sur le port %d...\n", PORT);        
 
-                csock = accept(sock, (SOCKADDR*)&csin, &recsize);
-                printf("Un client se connecte avec la socket %d de %s:%d\n", csock, inet_ntoa(csin.sin_addr), htons(csin.sin_port));
+                //boucle infini pour attendre les connexions clients
+                while(1){
 
-                if(recv(csock, buffer, 32, 0) != SOCKET_ERROR)
-                    printf("Recu : %s\n", buffer);
+                    // on accepte de se connecter avec un client
+                    csock = accept(sock, (SOCKADDR*)&csin, &recsize);
+                    printf("Un client se connecte avec la socket %d de %s:%d\n", csock, inet_ntoa(csin.sin_addr), htons(csin.sin_port));
 
-                /*sock_err = send(csock, buffer, 32, 0);
+                    // on créé un processus pour ce client
+                    pid = fork();
 
-                if(sock_err != SOCKET_ERROR)
-                    printf("Chaine envoyée : %s\n", buffer);
-                else
-                    printf("Erreur de transmission\n");
-                */
+                    if(pid < 0){
+                        printf("Erreur de fork");
+                        exit(1);
+                    }
 
-                /* Il ne faut pas oublier de fermer la connexion (fermée dans les deux sens) */
-                shutdown(csock, 2);
+                    // ce processus fils va appeler la méthode de lecture puis renvoie d'un message de "bonne reception"
+                    if(pid == 0){
+                        //on forme l'ancien socket, maintenant on utilise le csock issue de accept()
+                        close(sock);
+                        doprocessing(csock);
+                        exit(0);
+                    }
+                    else{
+                        close(csock);
+                    }
+
+                    // Il ne faut pas oublier de fermer la connexion (fermée dans les deux sens)
+                    shutdown(csock, 2);
+                }
             }
         }
 
@@ -82,9 +115,10 @@ int main(void)
         closesocket(sock);
         printf("Fermeture du serveur terminee\n");
     }
- 
-    /* On attend que l'utilisateur tape sur une touche, puis on ferme */
-    getchar();
+    
+    //Non utilisé dans le cas de la boucle while(1) 
+    //On attend que l'utilisateur tape sur une touche, puis on ferme
+    //getchar();
  
     return EXIT_SUCCESS;
 }

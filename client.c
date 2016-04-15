@@ -31,33 +31,33 @@ int main(void)
     sin.sin_family = AF_INET;
     sin.sin_port = htons(PORT);
 
-    /* Si l'on a réussi à se connecter */
+    // Si l'on a réussi à se connecter
     if(connect(sock, (SOCKADDR*)&sin, sizeof(sin)) != SOCKET_ERROR)
     {
         printf("Connection à %s sur le port %d\n", inet_ntoa(sin.sin_addr), htons(sin.sin_port));
         
-        /* Si l'on reçoit des informations : on les affiche à l'écran */
         
+        // On récupere la chaine de caractere à envoyé depuis le clavier
         printf("Tapez une phrase : \n");
         fgets(buffer, sizeof buffer, stdin);
         
+        // On l'envoie sur le socket
         sock_err = send(sock, buffer, 32, 0);
-        /*
+        
+        // On recupere le message de bonne reception 
         if(recv(sock, buffer, 32, 0) != SOCKET_ERROR)
             printf("Recu : %s\n", buffer);
-        */
-
     }
-    /* sinon, on affiche "Impossible de se connecter" */
+    // sinon, on affiche "Impossible de se connecter"
     else
     {
         printf("Impossible de se connecter\n");
     }
 
-    /* On ferme la socket */
+    // On ferme la socket
     closesocket(sock);
  
-    /* On attend que l'utilisateur tape sur une touche, puis on ferme */
+    // On attend que l'utilisateur tape sur une touche, puis on ferme */
     getchar();
  
     return EXIT_SUCCESS;

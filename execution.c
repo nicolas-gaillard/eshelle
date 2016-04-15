@@ -16,9 +16,8 @@
 #define PIPE 4
 #define AND 5
 #define OR 6
-#define BACKGROUND 7
-#define OUT_REDIRECTION 8
-#define IN_REDIRECTION 9
+#define OUT_REDIRECTION 7
+#define IN_REDIRECTION 8
 
 static char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
@@ -429,9 +428,6 @@ void execute(char** commands[], int position, int inFD){
 
 			case OR :
 				orExecute(commands, position, inFD);
-				break;
-
-			case BACKGROUND :
 				break;
 
 			case HERE_COMMANDS :

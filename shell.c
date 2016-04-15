@@ -1,3 +1,5 @@
+/*** Author Nicolas GAILLARD ***/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -8,8 +10,30 @@
 #define BUFFER_KEYBOARDING 256
 #define BUFFER 50
 #define NUMBER_FONCTIONS 18
+
 /*
 shebang : #! puis script, permet de lancer un script
+*/
+
+int background(char** cmd[], int size){
+	if (strcmp(cmd[size - 1][0], "&")){
+		cmd[size - 1] = NULL;
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+/*
+Plus propre : 
+tu fork
+dans le fils tu fais exécuter le programme
+tu stockes le pid du fils dans le père
+tu fous un pthread pour faire un waitpid avec le pid du fils
+des que le fils termine, il balance l'exitcode dans le waitpid du pthread
+et à chaque commande dans ton shell tu check l'ensemble de tes programmes en bg, si y'en a un qui est terminé tu balances un affichage comme ça [iddubg] (EXITCODE) ...
+Et tu l'enlèves de la liste des procs en bg
 */
 
 void clean(const char *buffer, FILE *fp)
@@ -110,10 +134,30 @@ int main(int argc, char const *argv[]) {
     	// Automate qui sépare la commande en :
     	// command = automate(keyboarding, argCommand);
     	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
+    	// On doit récupérer la taille de la commande attention
 
-    	// Checking the command :
-    	
+   		/*
+    	else if (background(command) == 1){
+    		int pid;
+			if ((pid = fork()) == -1){
+				perror("fork failed ");
+			}
+
+			// Child process will execute in background
+			if (pid == 0){
+				execute((char***)command 0, STDIN_FILENO);
+    		}
+    	}
+
+    	// We execute the command normally 
+    	else{
+    		execute((char***)command 0, STDIN_FILENO);
+    	}
+    	*/
+
+
 /*
+    	// Checking the command :
     	else if (exist(command, functions) == 0){
     		// The command doesn't exist
     		perror("The command doesn't exist ");

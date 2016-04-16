@@ -387,11 +387,6 @@ void execute(char** commands[], int position, int inFD){
 	else if (commands[position + 1] == NULL) {
 		//|| whatsThisRedirection(commands[position+1]) == 0
 		redirectFD(inFD, STDIN_FILENO);
-		printf("%s\n",commands[position][0]);
-		char path[100];
-		getcwd (path, 99);
-		// We display the current directory
-		printf("%s\n",path);
 		execvp(commands[position][0], commands[position]);
 		perror("exec failed ");
 	}

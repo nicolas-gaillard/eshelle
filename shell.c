@@ -129,12 +129,8 @@ int main(int argc, char const *argv[]) {
     			int size;
     			// We cut the command
     			char *** command = decoupe(keyboarding, &size);
-				int i=0;for(i=0;i<size;i++)printf("%s %s\n",command[i][0],command[i][1]);
-				printf("size = %d\n",size);
-    			// If the command has to be executed in background :
-    			printf("lol1\n");
+    			// If the command has to be executed in background :$
 			if (background(command, size) == 1){
-    				printf("lol2\n");
 				int pid;
 					if ((pid = fork()) == -1){
 						perror("fork failed ");
@@ -146,7 +142,6 @@ int main(int argc, char const *argv[]) {
     				}
     			}
     			else {
-				printf("lol3\n");
     				execute((char***)command, 0, STDIN_FILENO);
     			}
 

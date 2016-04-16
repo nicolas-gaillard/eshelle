@@ -50,15 +50,15 @@ char **str_split (char *s, const char *ct){
 char*** decoupe(char *command, int* size){
 	//char tab[SIZE_CUTTING][SIZE_CUTTING][SIZE_CUTTING];
 
-	int k,l;
+	int m,l;
 
 	char *** tab = malloc(sizeof(char**)*SIZE_CUTTING);
-	for (k = 0; k < SIZE_CUTTING; ++k)
+	for (m = 0; m < SIZE_CUTTING; ++m)
 	{
-		tab[k] = malloc(sizeof(char*)*SIZE_CUTTING);
+		tab[m] = malloc(sizeof(char*)*SIZE_CUTTING);
 		for (l = 0; l < SIZE_CUTTING; ++l)
 		{
-			tab[k][l] = malloc(sizeof(char)*SIZE_CUTTING);
+			tab[m][l] = malloc(sizeof(char)*SIZE_CUTTING);
 		}
 	}
 

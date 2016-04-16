@@ -10,13 +10,13 @@
 
 /*
 	Function name : 
-		recursiveMve
+		recursiveMv
 	Arguments : 
 		char *nameDir (name of the directory we want to remove)
 	Description : 
 		removes recursively directory (if "-r")
 */
-int recursiveMve(const char *nameSource,const char *nameDestination){
+int recursiveMv(const char *nameSource,const char *nameDestination){
 	// Declaration of variables	
 	DIR *source;           	            // the source directory we want to move ...
 	DIR *destination;           	    // ... in the destination directory
@@ -82,7 +82,7 @@ int recursiveMve(const char *nameSource,const char *nameDestination){
 		}
 		// Else it's a directory and we throw the recursive function on it
 		else if ( S_ISDIR(file_stat.st_mode) ){
-		    recursiveMve(path_Src,path_Dest);
+		    recursiveMv(path_Src,path_Dest);
 		}
 	}
 	
@@ -155,7 +155,7 @@ int mv(int argc, char *argv[]){
             remove(argv[1]);
         }
         else if(isFolder(argv[1])){
-            recursiveMve(argv[1],argv[2]);
+            recursiveMv(argv[1],argv[2]);
         }
         else{
             printf("mv : file/directory '%s' doesn't exist\n", argv[1]);

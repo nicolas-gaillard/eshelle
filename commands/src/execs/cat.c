@@ -1,8 +1,10 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "IS_file.c"
+#include "../../lib/IS_file.h"
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define TAILLE 100
 

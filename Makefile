@@ -16,25 +16,25 @@ clean:
 independance: inde clean
 
 inde: inde.o
-	gcc -o $(BIN)/ls ls.o
-	gcc -o $(BIN)/cat cat.o
-	gcc -o $(BIN)/cd cd.o
+	gcc -o $(BIN)/ls ls.o IS_file.o
+	gcc -o $(BIN)/cat cat.o IS_file.o
+	gcc -o $(BIN)/cd cd.o IS_file.o
 	gcc -o $(BIN)/mkdir mkdir.o
 	gcc -o $(BIN)/pwd pwd.o
-	gcc -o $(BIN)/du du.o
-	gcc -o $(BIN)/rm rm.o
-	gcc -o $(BIN)/mv mv.o
-	gcc -o $(BIN)/cp cp.o
+	gcc -o $(BIN)/du du.o IS_file.o
+	gcc -o $(BIN)/rm rm.o IS_file.o
+	gcc -o $(BIN)/cp cp.o IS_file.o
 	gcc -o $(BIN)/chmod chmod.o
-	gcc -o $(BIN)/chown chown.o
-	gcc -o $(BIN)/chgrp chgrp.o
+	gcc -o $(BIN)/chown chown.o IS_file.o
+	gcc -o $(BIN)/chgrp chgrp.o IS_file.o
 	gcc -o $(BIN)/echo echo.o
+	gcc -o $(BIN)/mv mv.o IS_file.o
 
 # Compilation en librairie statique intégré à l'exécutable
 statique : stat clean
 
 stat : stat.o
-	ar cqr $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
+	ar crs $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	ranlib $(LIB)/libcommands.a
 	gcc -I$(LIB) -L$(LIB) -O $(STAT)/$(MAIN).c -o $(BIN)/$(MAIN)STAT -lcommands
 	
@@ -46,8 +46,19 @@ dyna: dyna.o
 	sudo cp -f /usr/lib/libcommands.so $(LIB)
 	gcc -o $(BIN)/mainDYNA $(DYNA)/main.c /usr/lib/libcommands.so
 
+#Compilation du shell en librairie statique
+shell_statique: shestat clean
+
+shestat: 
+	
+#Compilation du shell en librairie dynamique
+shell_dynamique: shedyna clean
+
+shedyna:
+	
 
 inde.o :
+	gcc -c $(COMPI)/IS_file.c
 	gcc -c $(COMPI)/ls.c
 	gcc -c $(COMPI)/cat.c
 	gcc -c $(COMPI)/cd.c

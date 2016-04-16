@@ -10,13 +10,13 @@
 
 /*
 	Function name : 
-		recursiveMv
+		recursiveCp
 	Arguments : 
 		char *nameDir (name of the directory we want to remove)
 	Description : 
 		removes recursively directory (if "-r")
 */
-int recursiveMv(const char *nameSource,const char *nameDestination){
+int recursiveCp(const char *nameSource,const char *nameDestination){
 	// Declaration of variables	
 	DIR *source;           	            // the source directory we want to move ...
 	DIR *destination;           	    // ... in the destination directory
@@ -26,16 +26,16 @@ int recursiveMv(const char *nameSource,const char *nameDestination){
 
     // Source directory opening
 	if ((source=opendir(nameSource))==NULL){
-		printf("mv : cannot open the directory %s\n",nameSource);
+		printf("cp : cannot open the directory %s\n",nameSource);
 		return -1;
 	}
 
     // Destination directory opening
 	if(mkdir(nameDestination,0775)!=0){
-	    printf("mv : repertory %s already exists\n",nameDestination);
+	    printf("cp : repertory %s already exists\n",nameDestination);
 	}
     if ((destination=opendir(nameDestination))==NULL){
-		printf("mv : no such directory %s\n",nameDestination);
+		printf("cp : no such directory %s\n",nameDestination);
 	    return -1;
 	}
 	
@@ -78,11 +78,10 @@ int recursiveMv(const char *nameSource,const char *nameDestination){
             }
             fclose(f_Dest);
             fclose(f_Src);
-		    //unlink(path_Src);
 		}
 		// Else it's a directory and we throw the recursive function on it
 		else if ( S_ISDIR(file_stat.st_mode) ){
-		    recursiveMv(path_Src,path_Dest);
+		    recursiveCp(path_Src,path_Dest);
 		}
 	}
 	
@@ -106,15 +105,15 @@ int cp(int argc, char *argv[]){
     * Displays an error message if there are too few/many arguments
     */
     if(argc<2){
-        printf("mv : too few argument\n");
+        printf("cp : too few argument\n");
         return -1;
     }
     if(argc==2){
-        printf("mv : missing destination file after '%s'\n",argv[1]);
+        printf("cp : missing destination file after '%s'\n",argv[1]);
         return -1;
     }
     else if(argc>3){
-        printf("mv : too many arguments\n");
+        printf("cp : too many arguments\n");
         return -1;
     }
     else{
@@ -152,13 +151,12 @@ int cp(int argc, char *argv[]){
             }
             fclose(f_Dest);
             fclose(f_Src);
-            remove(argv[1]);
         }
         else if(isFolder(argv[1])){
-            recursiveMv(argv[1],argv[2]);
+            recursiveCp(argv[1],argv[2]);
         }
         else{
-            printf("mv : file/directory '%s' doesn't exist\n", argv[1]);
+            printf("cp : file/directory '%s' doesn't exist\n", argv[1]);
             return -1;
         }
     }

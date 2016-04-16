@@ -1,12 +1,14 @@
 /*** Author : Quentin Levavasseur ***/
 
-#include "IS_file.c"
+#include "../../lib/IS_file.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 /*
 	Function name : 

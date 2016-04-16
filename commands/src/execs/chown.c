@@ -1,6 +1,6 @@
 /** Author : Jordan BLOUIN **/
 
-#include "IS_file.c"
+#include "../../lib/IS_file.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>

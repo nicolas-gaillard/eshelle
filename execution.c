@@ -5,19 +5,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
-
-#define NUMBER_FONCTIONS 18
-#define NUMBER_REDIRECTION 7
-#define ERROR 1
-#define SIZE_BUFFER 256
-
-#define SIMPLE_OUT_REDIRECTION 2
-#define HERE_COMMANDS 3
-#define PIPE 4
-#define AND 5
-#define OR 6
-#define OUT_REDIRECTION 7
-#define IN_REDIRECTION 8
+#include "execution.h"
 
 static char *functions[NUMBER_FONCTIONS] = 
 {"ls", "mkdir", "cd", "pwd", "cat", "more", "less", "mv", "cp", "rm", "du", "chown",
@@ -26,9 +14,7 @@ static char *functions[NUMBER_FONCTIONS] =
 static char *redirections[NUMBER_REDIRECTION] =
 {"<", ">", ">>", "<<", "&&", "||", "|"};
 
-void execute(char** commands[], int position, int inFD);
-void outExecute(char** commands[], int position, int inFD);
-void outSimpleExecute(char** commands[], int position, int inFD);
+
 
 void clean(const char *buffer, FILE *fp){
     char *p = strchr(buffer,'\n');
@@ -69,9 +55,6 @@ int whatsThisRedirection(char *arg[]){
 	}
 	else if (strcmp(arg[0], "&&") == 0){
 		return AND;
-	}
-	else if (strcmp(arg[0], "&") == 0){
-		return BACKGROUND;
 	}
 	else {
 		return 0;
@@ -451,6 +434,7 @@ void execute(char** commands[], int position, int inFD){
 
 int main(int argc, char const *argv[])
 {
+	/*
 	char* cmd1[] = { "ls" , "-l", NULL };
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* cmd3[] = { "more", NULL };
@@ -483,5 +467,6 @@ int main(int argc, char const *argv[])
 	char** cmds[] = {cmd5, delim1, cmd1};
 
 	execute((char***)cmds, 0, STDIN_FILENO);
+	*/
 	return 0;
 }

@@ -1,11 +1,12 @@
-/*** Author Nicolas GAILLARD ***/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
+//#include "automate.h"
+//#include "decoupe.h"
+#include "execution.h"
 
 #define BUFFER_KEYBOARDING 256
 #define BUFFER 50
@@ -35,18 +36,6 @@ des que le fils termine, il balance l'exitcode dans le waitpid du pthread
 et à chaque commande dans ton shell tu check l'ensemble de tes programmes en bg, si y'en a un qui est terminé tu balances un affichage comme ça [iddubg] (EXITCODE) ...
 Et tu l'enlèves de la liste des procs en bg
 */
-
-void clean(const char *buffer, FILE *fp)
-{
-    char *p = strchr(buffer,'\n');
-    if (p != NULL)
-        *p = 0;
-    else
-    {
-        int c;
-        while ((c = fgetc(fp)) != '\n' && c != EOF);
-    }
-}
 
 void clear(){
   printf("\033c");

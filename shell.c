@@ -4,8 +4,8 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <signal.h>
-//#include "automate.h"
-//#include "decoupe.h"
+#include "automate.h"
+#include "decoupe.h"
 #include "execution.h"
 
 #define BUFFER_KEYBOARDING 256
@@ -81,6 +81,7 @@ void prompt(char *currentDir, char *hostName){
 	fflush(stdout);
 }
 
+/*
 int exist(char *c, char *t[]){
 	for (int i = 0; i < NUMBER_FONCTIONS; ++i)
 	{
@@ -90,12 +91,10 @@ int exist(char *c, char *t[]){
 	}
 	return 0;
 }
-
-// Pour le pipe, passé par un fichier temporaire tmpfile()
+*/
 
 // FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
 
-// Rajouter la libération de ressources
 int main(int argc, char const *argv[]) {
 	char currentDir[BUFFER];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
@@ -120,30 +119,35 @@ int main(int argc, char const *argv[]) {
     		exit(0); // A modifier en fonction des sockets     		
     	}
 
-    	// Automate qui sépare la commande en :
-    	// command = automate(keyboarding, argCommand);
-    	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
-    	// On doit récupérer la taille de la commande attention
-
-   		/*
-    	else if (background(command) == 1){
-    		int pid;
-			if ((pid = fork()) == -1){
-				perror("fork failed ");
-			}
-
-			// Child process will execute in background
-			if (pid == 0){
-				execute((char***)command 0, STDIN_FILENO);
-    		}
-    	}
-
-    	// We execute the command normally 
     	else{
-    		execute((char***)command 0, STDIN_FILENO);
-    	}
-    	*/
 
+    		// Checking the command :
+    		if (automate(keyboarding) == 1){
+    			// If the command is ok :
+    			int size;
+    			// We cut the command
+    			char *** command = decoupe(keyboarding, &size);
+
+    			// If the command has to be executed in background :
+    			if (background(command, size) == 1){
+    				int pid;
+					if ((pid = fork()) == -1){
+						perror("fork failed ");
+					}
+
+					// Child process will execute in background
+					if (pid == 0){
+						execute((char***)command, 0, STDIN_FILENO);
+    				}
+    			}
+    			else {
+    				execute((char***)command, 0, STDIN_FILENO);
+    			}
+    		}
+
+    	}
+  
+    	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
 
 /*
     	// Checking the command :

@@ -2,19 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "decoupe.h"
+#include "automate.h"
 
 // Automate de découpe
-
-int isLetter(char c){
-	if ((c >= 'a' && c <= 'z') || (c>='A' && c <='Z'))
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
 
 char **str_split (char *s, const char *ct){
    char **tab = NULL;
@@ -114,28 +104,4 @@ char*** decoupe(char *command, int* size){
 
 	*size = i;
 	return tab;
-}
-
-int main(int argc, char const *argv[]){
-
-	char ***tab;
-	char command[] = "ls -al | texte | cat > texte.txt";
-	int size = 0;
-	tab = decoupe(command, &size);
-	free(tab);
-
-	/*
-	printf("tab[0][0] : %s \n",tab[0][0]);
-	printf("tab[0][1] : %s \n",tab[0][1]);
-	printf("tab[1][0] : %s \n",tab[1][0]);
-	printf("tab[1][1] : %s \n",tab[1][1]);
-	printf("tab[2][0] : %s \n",tab[2][0]);
-	printf("tab[2][1] : %s \n",tab[2][1]);
-	printf("tab[3][0] : %s \n",tab[3][0]);
-	printf("tab[3][1] : %s \n",tab[3][1]);
-	printf("tab[4][0] : %s \n",tab[4][0]);
-	printf("tab[4][1] : %s \n",tab[4][1]);
-	printf("tab[5][0] : %s \n",tab[5][0]);
-	printf("tab[5][1] : %s \n",tab[5][1]);
-	*/
 }

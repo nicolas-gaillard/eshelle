@@ -275,11 +275,3 @@ int automate(char command[]){
 	}
 	return 1;
 }
-
-int main(){
-
-	char command[] = "ls -al | texte | cat > texte.txt";
-	int i = automate(command);
-	printf("%d \n", i);
-	return 0;
-}

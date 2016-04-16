@@ -432,9 +432,9 @@ void execute(char** commands[], int position, int inFD){
 	}
 }
 
+/*
 int main(int argc, char const *argv[])
 {
-	/*
 	char* cmd1[] = { "ls" , "-l", NULL };
 	char* cmd2[] = { "wc", NULL, NULL };
 	char* cmd3[] = { "more", NULL };
@@ -467,6 +467,7 @@ int main(int argc, char const *argv[])
 	char** cmds[] = {cmd5, delim1, cmd1};
 
 	execute((char***)cmds, 0, STDIN_FILENO);
-	*/
+
 	return 0;
 }
+*/

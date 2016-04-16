@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "decoupe.h"
 
 // Automate de découpe
 
@@ -15,8 +16,7 @@ int isLetter(char c){
 	}
 }
 
-char **str_split (char *s, const char *ct)
-{
+char **str_split (char *s, const char *ct){
    char **tab = NULL;
 
    if (s != NULL && ct != NULL)
@@ -57,30 +57,26 @@ char **str_split (char *s, const char *ct)
 }
 
 
+char*** decoupe(char *command, int* size){
+	//char tab[20][20][20];
 
-int main(){
-
-	printf("Début du découpage n°1 \n");
-
-	char command[] = "ls -al | texte | cat > texte.txt";
-
-	char *decoupe[20];
-
-	decoupe[0] = "ahahah";
-
-	printf("%s \n", decoupe[0]);
-
+	char *** tab = malloc(sizeof(char**)*SIZE_CUTTING);
+	for (int i = 0; i < 20; ++i)
+	{
+		tab[i] = malloc(sizeof(char*)*SIZE_CUTTING);
+		for (int j = 0; j < 20; ++j)
+		{
+			tab[i][j] = malloc(sizeof(char)*SIZE_CUTTING);
+		}
+	}
 
 	int i, j, pred;
-	char tab[20][20][20];
 	i=0;
  	j=0;
  	pred = 0;
 
-	//const char *delim = ' ';
-	//char **decoupe2 = str_split(command, &delim);
-
-	char **t = NULL;
+ 	//char *decoupe[20];
+ 	char **t = NULL;
 	t = str_split(command, " ");
 
  	while (t[i]!=NULL)
@@ -89,7 +85,6 @@ int main(){
 			strcpy(tab[j][1], t[i]);
 			j++;
 			pred = 0;
-			printf("je passe ici aussi \n");
 		}
 		else if(isLetter(t[i][0])){
 			strcpy(tab[j][0], t[i]);
@@ -107,16 +102,29 @@ int main(){
 		else if((t[i][0] == '>' ) || (t[i][0] == '<')){
 			strcpy(tab[j][0], t[i]);
 			pred = 99;
-			printf("je passe ici \n");
-			printf("%d\n",pred);
+			//printf("%d\n",pred);
 		}
 		else if(t[i][0] == '-'){
 			pred++;
 			strcpy(tab[j-1][pred], t[i]);
 		}
-		printf("%s\n", t[i]);
+		//printf("%s\n", t[i]);
 		i++;
 	}
+
+	*size = i;
+	return tab;
+}
+
+int main(int argc, char const *argv[]){
+
+	char ***tab;
+	char command[] = "ls -al | texte | cat > texte.txt";
+	int size = 0;
+	tab = decoupe(command, &size);
+	free(tab);
+
+	/*
 	printf("tab[0][0] : %s \n",tab[0][0]);
 	printf("tab[0][1] : %s \n",tab[0][1]);
 	printf("tab[1][0] : %s \n",tab[1][0]);
@@ -129,9 +137,5 @@ int main(){
 	printf("tab[4][1] : %s \n",tab[4][1]);
 	printf("tab[5][0] : %s \n",tab[5][0]);
 	printf("tab[5][1] : %s \n",tab[5][1]);
-
-
-	int nbSousChaine = i;
-	printf("nombre de chaine : %d\n",i);
- 
+	*/
 }

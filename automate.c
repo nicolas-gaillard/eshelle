@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "automate.h"
 
 enum States
 	{
@@ -24,8 +25,8 @@ enum States
 		State7,  //17
 		State71, //18
 		State8,  //19
-		State9,  //20
-		StateFinal, //21
+		//State9,  //20
+		//StateFinal, //21
 		StateFail, //22
 	};
 
@@ -50,20 +51,11 @@ int isLetter(char c){
 		return 0;
 	}
 }
-
-int main(){
-
+int automate(char command[]){
 	enum States curState;
-
-	printf("Début de l'automate \n");
-
-	char command[] = "ls -al | texte | cat > texte.txt";
 	int lenString = strlen(command);
-	int i = 0;
-
-	printf("%s de taille %d \n", command, lenString);
-
-	for(i ; i < lenString ; i++){
+	int i;
+	for(i = 0; i < lenString ; i++){
 		switch(curState)
 		{
 			case State0:
@@ -279,7 +271,15 @@ int main(){
 				return 0;
 				break;
 		}
-		printf("Le caractere %c nous envoie vers l'etape %d \n", command[i], curState);
+		//printf("Le caractere %c nous envoie vers l'etape %d \n", command[i], curState);
 	}
-	printf("Fin de l'automate \n");
+	return 1;
+}
+
+int main(){
+
+	char command[] = "ls -al | texte | cat > texte.txt";
+	int i = automate(command);
+	printf("%d \n", i);
+	return 0;
 }

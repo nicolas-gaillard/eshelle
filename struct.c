@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "shell.h"
-#include "redirection.h"
-#include "struct.h"
-#include "automation.h"
 
 // Inclure les libraries
 

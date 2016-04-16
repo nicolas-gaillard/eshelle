@@ -142,7 +142,18 @@ int main(int argc, char const *argv[]) {
     				}
     			}
     			else {
-    				execute((char***)command, 0, STDIN_FILENO);
+    				int pid;
+					if ((pid = fork()) == -1){
+						perror("fork failed ");
+					}
+
+					// Child process will execute in background
+					if (pid == 0){
+						execute((char***)command, 0, STDIN_FILENO);
+    				}
+    				else{
+    					wait(NULL);
+    				}
     			}
 
     			free(command);

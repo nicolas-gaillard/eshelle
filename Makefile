@@ -1,7 +1,9 @@
 # AUTEUR : Jordan BLOUIN
-COMPI=./commands/execs
+COMPI=./commands/src/execs
+STAT=./commands/src/statlib
+DYNA=./commands/src/dynalib
+BIN=./commands/bin
 LIB=./commands/lib
-DYNA=./commands/dynalib
 MAIN=main#NOM DU FICHIER A DEFINIR
 
 all: independance statique dynamique
@@ -14,34 +16,36 @@ clean:
 independance: inde clean
 
 inde: inde.o
-	gcc -o $(COMPI)/ls ls.o
-	gcc -o $(COMPI)/cat cat.o
-	gcc -o $(COMPI)/cd cd.o
-	gcc -o $(COMPI)/mkdir mkdir.o
-	gcc -o $(COMPI)/pwd pwd.o
-	gcc -o $(COMPI)/du du.o
-	gcc -o $(COMPI)/rm rm.o
-	gcc -o $(COMPI)/mv mv.o
-	gcc -o $(COMPI)/cp cp.o
-	gcc -o $(COMPI)/chmod chmod.o
-	gcc -o $(COMPI)/chown chown.o
-	gcc -o $(COMPI)/chgrp chgrp.o
-	gcc -o $(COMPI)/echo echo.o
-	
+	gcc -o $(BIN=)/ls ls.o
+	gcc -o $(BIN=)/cat cat.o
+	gcc -o $(BIN=)/cd cd.o
+	gcc -o $(BIN=)/mkdir mkdir.o
+	gcc -o $(BIN=)/pwd pwd.o
+	gcc -o $(BIN=)/du du.o
+	gcc -o $(BIN=)/rm rm.o
+	gcc -o $(BIN=)/mv mv.o
+	gcc -o $(BIN=)/cp cp.o
+	gcc -o $(BIN=)/chmod chmod.o
+	gcc -o $(BIN=)/chown chown.o
+	gcc -o $(BIN=)/chgrp chgrp.o
+	gcc -o $(BIN=)/echo echo.o
 
 # Compilation en librairie statique intégré à l'exécutable
 statique : stat clean
 
 stat : stat.o
-	ar crs $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o
+	ar cqr $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	ranlib $(LIB)/libcommands.a
-	gcc -I$(LIB) -L$(LIB) -O $(LIB)/$(MAIN).c -o $(LIB)/$(MAIN) -lcommands
+	gcc -I$(LIB) -L$(LIB) -O $(STAT)/$(MAIN).c -o $(BIN)/$(MAIN)STAT -lcommands
 	
 # Compilation en librairie dynamique à chargement explicite
 dynamique: dyna clean
 
 dyna: dyna.o
-	gcc -shared -o $(DYNA)/libcommands.so IS_file.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o
+	sudo gcc -shared -o /usr/lib/libcommands.so cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
+	sudo cp -f /usr/lib/libcommands.so $(LIB)
+	gcc -o $(BIN)/mainDYNA $(DYNA)/main.c /usr/lib/libcommands.so
+
 
 inde.o :
 	gcc -c $(COMPI)/ls.c
@@ -59,19 +63,20 @@ inde.o :
 	gcc -c $(COMPI)/echo.c
 	
 stat.o :
-	gcc -c $(LIB)/ls.c
-	gcc -c $(LIB)/cat.c
-	gcc -c $(LIB)/cd.c
-	gcc -c $(LIB)/mkdir.c
-	gcc -c $(LIB)/pwd.c
-	gcc -c $(LIB)/du.c
-	gcc -c $(LIB)/rm.c
-	gcc -c $(LIB)/mv.c
-	gcc -c $(LIB)/cp.c
-	gcc -c $(LIB)/chmod.c
-	gcc -c $(LIB)/chown.c
-	gcc -c $(LIB)/chgrp.c
-	gcc -c $(LIB)/echo.c
+	gcc -c $(STAT)/IS_file.c
+	gcc -c $(STAT)/ls.c
+	gcc -c $(STAT)/cat.c
+	gcc -c $(STAT)/cd.c
+	gcc -c $(STAT)/mkdir.c
+	gcc -c $(STAT)/pwd.c
+	gcc -c $(STAT)/du.c
+	gcc -c $(STAT)/rm.c
+	gcc -c $(STAT)/mv.c
+	gcc -c $(STAT)/cp.c
+	gcc -c $(STAT)/chmod.c
+	gcc -c $(STAT)/chown.c
+	gcc -c $(STAT)/chgrp.c
+	gcc -c $(STAT)/echo.c
 
 dyna.o:
 	gcc -fPIC -c $(DYNA)/IS_file.c

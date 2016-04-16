@@ -96,6 +96,8 @@ int exist(char *c, char *t[]){
 // FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
 
 // Rajouter la libération de ressources
+
+/*
 int main(int argc, char const *argv[]) {
 	char currentDir[BUFFER];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
@@ -119,7 +121,7 @@ int main(int argc, char const *argv[]) {
     	if (strcmp(keyboarding,"quit") == 0){
     		exit(0); // A modifier en fonction des sockets     		
     	}
-
+*/
     	// Automate qui sépare la commande en :
     	// command = automate(keyboarding, argCommand);
     	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
@@ -169,7 +171,11 @@ int main(int argc, char const *argv[]) {
     		}	
     	}
     */	
+
+
+    	/*
 	}
 
-	return 0;
+	return 0; 
 }
+*/

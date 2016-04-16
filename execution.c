@@ -387,19 +387,8 @@ void execute(char** commands[], int position, int inFD){
 	else if (commands[position + 1] == NULL) {
 		//|| whatsThisRedirection(commands[position+1]) == 0
 		redirectFD(inFD, STDIN_FILENO);
-		
-		char final[]="./commands/execs/";
-		strcat(final,commands[position][0]);
-		int i=1;
-		while(commands[position][i]!=NULL){
-		    strcat(final," ");
-		    strcat(final,commands[position][i]);
-		    i++;
-		}
-		system(final);
-		
-		//execvp(commands[position][0], commands[position]);
-		//perror("exec failed ");
+		execvp(commands[position][0], commands[position]);
+		perror("exec failed ");
 	}
 	// This is a commmand
 	else {
@@ -436,18 +425,8 @@ void execute(char** commands[], int position, int inFD){
 			// There isn't redirection
 			default :
 				redirectFD(inFD, STDIN_FILENO);
-				char *final="./commands/execs/";
-        		strcat(final,commands[position][0]);
-        		int i=1;
-        		while(commands[position][i]!=NULL){
-        		    strcat(final," ");
-        		    strcat(final,commands[position][i]);
-        		    i++;
-        		}
-        		printf("final = %s\n",final);
-        		system(final);
-				//execvp(commands[position][0], commands[position]);
-				//perror("exec failed ");
+				execvp(commands[position][0], commands[position]);
+				perror("exec failed ");
 				break;
 		}
 

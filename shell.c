@@ -98,20 +98,28 @@ int exist(char *c, char *t[]){
 // FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
 
 int main(int argc, char const *argv[]) {
+	
 	char currentDir[BUFFER];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
 	char hostName[BUFFER];
 
 	// Clear the terminal 
 	clear();
+	
+	char PATH[]="./commands/execs/:";
+	strcat(PATH,getenv("PATH"));
+	setenv("PATH",PATH,1);
 
+	//setenv("PS1","\u@\h:\w \$ ",1);
+	
 	// Welcome message
 	printf("Shell v1.0 \nEnter \"quit\" to leave\n");
 
 	while(1){
 		// Display the prompt :
 		prompt(currentDir, hostName);
-
+		//printf("%s",getenv("PS1"));
+	
 		// Listenning the command :
 		fgets(keyboarding, sizeof(keyboarding), stdin);
     	clean(keyboarding, stdin);
@@ -130,8 +138,8 @@ int main(int argc, char const *argv[]) {
     			// We cut the command
     			char *** command = decoupe(keyboarding, &size);
     			// If the command has to be executed in background :$
-			if (background(command, size) == 1){
-				int pid;
+				if (background(command, size) == 1){
+					int pid;
 					if ((pid = fork()) == -1){
 						perror("fork failed ");
 					}

@@ -62,8 +62,9 @@ char*** decoupe(char *command, int* size){
 		}
 	}
 
-	int i, j, pred;
+	int i, j, k, pred;
 	i=0;
+	k=0;
  	j=0;
  	pred = 0;
 
@@ -72,6 +73,28 @@ char*** decoupe(char *command, int* size){
 	t = str_split(command, " ");
 
  	while (t[i]!=NULL)
+	{
+		if( (strcmp(t[i],"|")==0) || (strcmp(t[i],"&&")==0) || (strcmp(t[i],"||")==0) ){
+			j++;
+			k=0;
+			strcpy(tab[j][k], t[i]);
+			j++;
+			k=0;
+		}
+		else if( (strcmp(t[i],"<")==0) || (strcmp(t[i],">")==0) || (strcmp(t[i],">>")==0) || (strcmp(t[i],"<<")==0) ){
+			j++;
+			k=0;
+			strcpy(tab[j][k], t[i]);
+			k++;
+		}
+		else{
+			strcpy(tab[j][k], t[i]);
+			k++;
+		}
+		//printf("%s\n", t[i]);
+		i++;
+	}/*
+	while (t[i]!=NULL)
 	{
 		if(pred == 99){
 			strcpy(tab[j][1], t[i]);
@@ -102,9 +125,9 @@ char*** decoupe(char *command, int* size){
 		}
 		//printf("%s\n", t[i]);
 		i++;
-	}
+	}*/
 
-	*size = i;
+	*size = j+1;
 	return tab;
 }
 /*

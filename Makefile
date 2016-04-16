@@ -16,19 +16,19 @@ clean:
 independance: inde clean
 
 inde: inde.o
-	gcc -o $(BIN=)/ls ls.o
-	gcc -o $(BIN=)/cat cat.o
-	gcc -o $(BIN=)/cd cd.o
-	gcc -o $(BIN=)/mkdir mkdir.o
-	gcc -o $(BIN=)/pwd pwd.o
-	gcc -o $(BIN=)/du du.o
-	gcc -o $(BIN=)/rm rm.o
-	gcc -o $(BIN=)/mv mv.o
-	gcc -o $(BIN=)/cp cp.o
-	gcc -o $(BIN=)/chmod chmod.o
-	gcc -o $(BIN=)/chown chown.o
-	gcc -o $(BIN=)/chgrp chgrp.o
-	gcc -o $(BIN=)/echo echo.o
+	gcc -o $(BIN)/ls ls.o
+	gcc -o $(BIN)/cat cat.o
+	gcc -o $(BIN)/cd cd.o
+	gcc -o $(BIN)/mkdir mkdir.o
+	gcc -o $(BIN)/pwd pwd.o
+	gcc -o $(BIN)/du du.o
+	gcc -o $(BIN)/rm rm.o
+	gcc -o $(BIN)/mv mv.o
+	gcc -o $(BIN)/cp cp.o
+	gcc -o $(BIN)/chmod chmod.o
+	gcc -o $(BIN)/chown chown.o
+	gcc -o $(BIN)/chgrp chgrp.o
+	gcc -o $(BIN)/echo echo.o
 
 # Compilation en librairie statique intégré à l'exécutable
 statique : stat clean

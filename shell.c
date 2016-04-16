@@ -145,6 +145,8 @@ int main(int argc, char const *argv[]) {
     			else {
     				execute((char***)command, 0, STDIN_FILENO);
     			}
+
+    			free(command);
     		}
 
     	}
@@ -157,24 +159,7 @@ int main(int argc, char const *argv[]) {
     		// The command doesn't exist
     		perror("The command doesn't exist ");
     	   	exit(0);
-    	}
-    	else{
-    		// Creation of the process that will execute the command
-    		int pid = fork();
-    		int *status = NULL;
-    		if (pid == 0){
-    			// Interpretation of the command
-    			if (execv("command", argCommand) == -1) {
-    				//kill(pid, SIGKILL);
-    				exit(0);
-    			}
-    		}
-    		else{
-    			// The parent process waits the end of the command
-    			wait(status);
-    		}	
-    	}
-    */	
+*/
 	}
 
 	return 0;

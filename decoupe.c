@@ -50,13 +50,15 @@ char **str_split (char *s, const char *ct){
 char*** decoupe(char *command, int* size){
 	//char tab[20][20][20];
 
+	int k,l;
+
 	char *** tab = malloc(sizeof(char**)*SIZE_CUTTING);
-	for (int i = 0; i < 20; ++i)
+	for (k = 0; k < 20; ++k)
 	{
-		tab[i] = malloc(sizeof(char*)*SIZE_CUTTING);
-		for (int j = 0; j < 20; ++j)
+		tab[k] = malloc(sizeof(char*)*SIZE_CUTTING);
+		for (l = 0; l < 20; ++l)
 		{
-			tab[i][j] = malloc(sizeof(char)*SIZE_CUTTING);
+			tab[k][l] = malloc(sizeof(char)*SIZE_CUTTING);
 		}
 	}
 
@@ -105,3 +107,16 @@ char*** decoupe(char *command, int* size){
 	*size = i;
 	return tab;
 }
+/*
+int main(int argc, char const *argv[])
+{
+	char ***tab;
+	char *command = "ls -l";
+	int size;
+	tab = decoupe(command, &size);
+	printf("%s\n", tab[0][0]);
+	printf("%s\n", tab[0][1]);
+	printf("%s\n", tab[0][2]);
+	return 0;
+}
+*/

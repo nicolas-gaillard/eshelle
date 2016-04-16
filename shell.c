@@ -110,15 +110,15 @@ int main(int argc, char const *argv[]) {
 	strcat(PATH,getenv("PATH"));
 	setenv("PATH",PATH,1);
 
-	//setenv("PS1","\u@\h:\w \$ ",1);
+	setenv("PS1","user@hote:currentdirectory$ ",1);
 	
 	// Welcome message
 	printf("Shell v1.0 \nEnter \"quit\" to leave\n");
 
 	while(1){
 		// Display the prompt :
-		prompt(currentDir, hostName);
-		//printf("%s",getenv("PS1"));
+		//prompt(currentDir, hostName);
+		printf("%s",getenv("PS1"));
 	
 		// Listenning the command :
 		fgets(keyboarding, sizeof(keyboarding), stdin);

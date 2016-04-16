@@ -36,17 +36,18 @@ int main(void)
     {
         printf("Connection à %s sur le port %d\n", inet_ntoa(sin.sin_addr), htons(sin.sin_port));
         
-        
-        // On récupere la chaine de caractere à envoyé depuis le clavier
-        printf("Tapez une phrase : \n");
-        fgets(buffer, sizeof buffer, stdin);
-        
-        // On l'envoie sur le socket
-        sock_err = send(sock, buffer, 32, 0);
-        
-        // On recupere le message de bonne reception 
-        if(recv(sock, buffer, 32, 0) != SOCKET_ERROR)
-            printf("Recu : %s\n", buffer);
+        while(1){
+          // On récupere la chaine de caractere à envoyé depuis le clavier
+          printf("Tapez votre commande : \n");
+          fgets(buffer, sizeof buffer, stdin);
+          
+          // On l'envoie sur le socket
+          sock_err = send(sock, buffer, 32, 0);
+          
+          // On recupere le message de bonne reception 
+          if(recv(sock, buffer, 32, 0) != SOCKET_ERROR)
+              printf("Recu : %s\n", buffer);
+        }
     }
     // sinon, on affiche "Impossible de se connecter"
     else

@@ -387,8 +387,19 @@ void execute(char** commands[], int position, int inFD){
 	else if (commands[position + 1] == NULL) {
 		//|| whatsThisRedirection(commands[position+1]) == 0
 		redirectFD(inFD, STDIN_FILENO);
-		execvp(commands[position][0], commands[position]);
-		perror("exec failed ");
+		
+		char final[]="./commands/execs/";
+		strcat(final,commands[position][0]);
+		int i=1;
+		while(commands[position][i]!=NULL){
+		    strcat(final," ");
+		    strcat(final,commands[position][i]);
+		    i++;
+		}
+		system(final);
+		
+		//execvp(commands[position][0], commands[position]);
+		//perror("exec failed ");
 	}
 	// This is a commmand
 	else {
@@ -423,51 +434,22 @@ void execute(char** commands[], int position, int inFD){
 				break;
 
 			// There isn't redirection
-			default : 
+			default :
 				redirectFD(inFD, STDIN_FILENO);
-				execvp(commands[position][0], commands[position]);
-				perror("exec failed ");
+				char *final="./commands/execs/";
+        		strcat(final,commands[position][0]);
+        		int i=1;
+        		while(commands[position][i]!=NULL){
+        		    strcat(final," ");
+        		    strcat(final,commands[position][i]);
+        		    i++;
+        		}
+        		printf("final = %s\n",final);
+        		system(final);
+				//execvp(commands[position][0], commands[position]);
+				//perror("exec failed ");
+				break;
 		}
 
 	}
 }
-
-/*
-int main(int argc, char const *argv[])
-{
-	char* cmd1[] = { "ls" , "-l", NULL };
-	char* cmd2[] = { "wc", NULL, NULL };
-	char* cmd3[] = { "more", NULL };
-	char* cmd4[] = { "cat", NULL};
-	char* cmd5[] = {"jgkjb", "-,", NULL}; // Test && et ||
-	char* cmd6[] = { "cat", "mdr.txt", NULL};
-	//char** cmds[] = { cmd1, delim1, cmd2, delim2, cmd3, NULL };
-	
-	char* delim1[] = { "||" };
-	char* delim2[] = { "&&" };
-	char* delim3[] = { ">>" , "toto.txt"};
-	char* delim4[] = { "<" , "toto.txt", NULL};
-	char* delim5[] = { "<<" , "stop", NULL};
-	char* delim6[] = { ">" , "toto.txt"};
-	//char* fichier1[] = { "toto.txt", NULL, NULL };
-
-
-	//char** cmds[] = { cmd1, delim3, fichier1, NULL };
-	//char** cmds[] = {cmd1, delim3, NULL};
-	//char** cmds[] = {cmd1, NULL};
-	//char** cmds[] = { cmd1, NULL };
-	//char ** cmds[] = {cmd4, delim5, NULL};
-	//char ** cmds[] = {cmd4, delim4, NULL};
-	//char ** cmd2[] = {cmd1, delim6, NULL};
-
-	//execute((char***)cmds, 0, STDIN_FILENO);
-	//execute((char***)cmds, 0, STDIN_FILENO);
-	//execute((char***)cmds, 0, STDIN_FILENO);
-
-	char** cmds[] = {cmd5, delim1, cmd1};
-
-	execute((char***)cmds, 0, STDIN_FILENO);
-
-	return 0;
-}
-*/

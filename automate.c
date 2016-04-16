@@ -99,6 +99,9 @@ int automate(char command[]){
 				else if(command[i] == '&'){
 					curState = State31;
 				}
+				else if(isLetter(command[i])){
+					curState = State51;
+				}
 				else{
 					curState = StateFail;
 				}
@@ -208,6 +211,9 @@ int automate(char command[]){
 				if(command[i] == ' '){
 					curState = State6;
 				}
+				else if(isLetter(command[i])){
+					curState = State6;
+				}
 				else{
 					curState = StateFail;
 				}
@@ -271,7 +277,6 @@ int automate(char command[]){
 				return 0;
 				break;
 		}
-		//printf("Le caractere %c nous envoie vers l'etape %d \n", command[i], curState);
 	}
 	return 1;
 }

@@ -96,53 +96,9 @@ char*** decoupe(char *command, int* size){
 		i++;
 	}
 	tab[j][k] = NULL;
+	j++;
+	tab[j] = NULL;
 	
-	/*while (t[i]!=NULL)
-	{
-		if(pred == 99){
-			strcpy(tab[j][1], t[i]);
-			j++;
-			pred = 0;
-		}
-		else if(isLetter(t[i][0])){
-			strcpy(tab[j][0], t[i]);
-			j++;
-			pred = 0;
-		}
-		else if(t[i][0] == '|'){
-			strcpy(tab[j][0], t[i]);
-			j++;
-		}
-		else if(t[i][0] == '&'){
-			strcpy(tab[j][0], t[i]);
-			j++;
-		}
-		else if((t[i][0] == '>' ) || (t[i][0] == '<')){
-			strcpy(tab[j][0], t[i]);
-			pred = 99;
-			//printf("%d\n",pred);
-		}
-		else if(t[i][0] == '-'){
-			pred++;
-			strcpy(tab[j-1][pred], t[i]);
-		}
-		//printf("%s\n", t[i]);
-		i++;
-	}*/
-
-	*size = j+1;
+	*size = j;
 	return tab;
 }
-/*
-int main(int argc, char const *argv[])
-{
-	char ***tab;
-	char *command = "ls -l";
-	int size;
-	tab = decoupe(command, &size);
-	printf("%s\n", tab[0][0]);
-	printf("%s\n", tab[0][1]);
-	printf("%s\n", tab[0][2]);
-	return 0;
-}
-*/

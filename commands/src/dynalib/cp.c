@@ -123,13 +123,21 @@ int cp(int argc, char *argv[]){
             char *path_Dest = argv[2], *path_Src = argv[1];
             char tmp[4096];
             int i;
+            char* ret;
             
             /* Setting the path to create a new file into the designated folder */
             if(argv[1][0] != '.')
             {
                 strcat(path_Dest, "/");
                 strcat(path_Dest, argv[1]);
-                printf("Dest path : %s\n", path_Dest);
+                //printf("Dest path : %s\n", path_Dest);
+            }
+            else
+            {
+                ret = strchr(argv[1], '/');
+                ret = strchr(ret, ret[1]);
+                strcat(path_Dest, ret);
+                //printf("Dest path : %s\n", path_Dest);
             }
             
             if((f_Src = fopen(path_Src, "r")) == NULL)

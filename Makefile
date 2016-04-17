@@ -6,7 +6,17 @@ BIN=./commands/bin
 LIB=./commands/lib
 MAIN=shell
 
-all: independance statique dynamique shell_statique shell_dynamique clean
+all: independance statique dynamique shell_independance shell_statique shell_dynamique clean
+
+#Règles d'exécution du shell
+exec_shell_inde :
+	./shellINDE
+	
+exec_shell_stat :
+	./shellSTAT
+	
+exec_shell_dyna :
+	./shellDYNA
 
 #Règle d'effacement des fichiers en .o
 clean:

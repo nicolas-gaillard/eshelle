@@ -27,11 +27,20 @@ Commandes Makefile :
         6- Lier le shell à la librairie dynamique :
             $ make shell_dynamique
             
-        7- Supprimer tous les fichiers en .o du dossier courant:
+        7- Supprimer tous les fichiers en .o du dossier courant :
             $ make clean
             
-        8- Toutes les commandes :
+        8- Toutes les commandes de compilation :
             $ make all
+        
+        9- Lancer l'exécutable gérant un exécutable par command :
+            $ make exec_shell_inde
+            
+        10- Lancer l'exécutable gérant la librairie statique :
+            $ make exec_shell_stat
+            
+        11- Lancer l'exécuatble gérant la librairie dynamique :
+            $ make exec_shell_dyna
 <!-- -->
 Les fichiers sources des commandes se situent dans  ./commands/src
 <!-- -->

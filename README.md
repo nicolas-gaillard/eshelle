@@ -1,10 +1,14 @@
 /============================== ***Projet eshelle*** ===============================/
 <!-- -->
 /*************** Membres du groupe *******************/
-    BLOUIN Jordan<!-- -->
-    BOUCHEVREAU Valentin<!-- -->
-    GAILLARD Nicolas<!-- -->
-    LEVAVASSEUR Quentin<!-- -->
+    BLOUIN Jordan
+    <!-- -->
+    BOUCHEVREAU Valentin
+    <!-- -->
+    GAILLARD Nicolas
+    <!-- -->
+    LEVAVASSEUR Quentin<
+    !-- -->
 <!-- -->
 Commandes Makefile :
 

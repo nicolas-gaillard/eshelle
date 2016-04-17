@@ -4,9 +4,9 @@ STAT=./commands/src/statlib
 DYNA=./commands/src/dynalib
 BIN=./commands/bin
 LIB=./commands/lib
-MAIN=main#NOM DU FICHIER A DEFINIR
+MAIN=shell#NOM DU FICHIER A DEFINIR
 
-all: independance statique dynamique
+all: independance statique dynamique shell_statique shell_dynamique clean
 
 #Règle d'effacement des fichiers en .o
 clean:
@@ -36,7 +36,6 @@ statique : stat clean
 stat : stat.o
 	ar crs $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	ranlib $(LIB)/libcommands.a
-	gcc -I$(LIB) -L$(LIB) -O $(STAT)/$(MAIN).c -o $(BIN)/$(MAIN)STAT -lcommands
 	
 # Compilation en librairie dynamique à chargement explicite
 dynamique: dyna clean
@@ -44,18 +43,18 @@ dynamique: dyna clean
 dyna: dyna.o
 	sudo gcc -shared -o /usr/lib/libcommands.so cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	sudo cp -f /usr/lib/libcommands.so $(LIB)
-	gcc -o $(BIN)/mainDYNA $(DYNA)/main.c /usr/lib/libcommands.so
 
 #Compilation du shell en librairie statique
-shell_statique: shestat clean
+shell_statique : she_stat clean
 
-shestat: 
-	
+she_stat :
+	gcc -I$(LIB) -L$(LIB) -o $(BIN)/$(MAIN)STAT shell.c  execution.c decoupe.c automate.c -lcommands
+
 #Compilation du shell en librairie dynamique
-shell_dynamique: shedyna clean
+shell_dynamique : she_dyna clean
 
-shedyna:
-	
+she_dyna:
+	gcc -o $(BIN)/$(MAIN)DYNA shell.c  execution.c decoupe.c automate.c /usr/lib/libcommands.so
 
 inde.o :
 	gcc -c $(COMPI)/IS_file.c

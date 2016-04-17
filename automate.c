@@ -30,6 +30,7 @@ enum States
 		State9,  //22
 		State91, //23
 		State92, //24
+		State95,
 		//StateFinal, //21
 		StateFail, //25
 	};
@@ -108,6 +109,9 @@ int automate(char command[]){
 				}
 				else if(command[i] == '.'){
 					curState = State9;
+				}
+				else if(command[i] == '$'){
+					curState = State95;
 				}
 				else{
 					curState = StateFail;
@@ -361,6 +365,15 @@ int automate(char command[]){
 
 				break;
 
+			case State95:
+				if(isLetter(command[i])){
+					curState = State51;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
 			case StateFail:
 				printf("La commande n'est pas correcte \n");
 				return 0;
@@ -374,5 +387,5 @@ int automate(char command[]){
 
 int main(void){
 
-	automate("cat ../toto/titi.txt > tota.txt");
+	automate("echo $PATH/grosseteub");
 }

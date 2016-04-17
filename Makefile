@@ -44,14 +44,20 @@ dyna: dyna.o
 	sudo gcc -shared -o /usr/lib/libcommands.so cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	sudo cp -f /usr/lib/libcommands.so $(LIB)
 
+#Compilation du shell avec un exécutable par fichier source
+shell_independance : independance she_inde clean
+
+she_inde :
+	gcc -o $(BIN)/$(MAIN)INDE shell.c execution.c decoupe.c automate.c
+
 #Compilation du shell en librairie statique
-shell_statique : she_stat clean
+shell_statique : statique she_stat clean
 
 she_stat :
 	gcc -I$(LIB) -L$(LIB) -o $(BIN)/$(MAIN)STAT shell.c  execution.c decoupe.c automate.c -lcommands
 
 #Compilation du shell en librairie dynamique
-shell_dynamique : she_dyna clean
+shell_dynamique : dynamique she_dyna clean
 
 she_dyna:
 	gcc -o $(BIN)/$(MAIN)DYNA shell.c  execution.c decoupe.c automate.c /usr/lib/libcommands.so

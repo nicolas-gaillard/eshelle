@@ -51,7 +51,7 @@ void prompt(char *currentDir, char *hostName){
 	// username@nameofthemachine:currentdirectory
 
 	getcwd(currentDir,BUFFER*sizeof(char));
-	gethostname(hostName, sizeof(hostName));
+	gethostname(hostName, BUFFER*sizeof(char));
 
 	// strcmp(currentDir,"") == *currentDir == NULL;	
 	if ((strcmp(currentDir,"") == 0) && (strcmp(hostName,"") == 0)){
@@ -140,6 +140,7 @@ int main(int argc, char const *argv[]) {
     			int size;
     			// We cut the command
     			char *** command = decoupe(keyboarding, &size);
+    			char *** commandBackground = command;
     			
     			if(strcmp(command[0][0],"cd")==0){
     				struct stat sts;
@@ -160,7 +161,8 @@ int main(int argc, char const *argv[]) {
 	
 						// Child process will execute in background
 						if (pid == 0){
-							execute((char***)command, 0, STDIN_FILENO);
+							execute((char***)commandBackground, 0, STDIN_FILENO);
+							free(commandBackground);
 	    				}
 	    			}
 	    			else {

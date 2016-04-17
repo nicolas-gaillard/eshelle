@@ -18,16 +18,21 @@ enum States
 		State41, //10
 		State5,  //11
 		State51, //12
-		State6,  //13
-		State601,//14
-		State61, //15
-		State62, //16
-		State7,  //17
-		State71, //18
-		State8,  //19
-		//State9,  //20
+		State52, //13
+		State53, //14
+		State6,  //15
+		State601,//16
+		State61, //17
+		State62, //18
+		State7,  //19
+		State71, //20
+		State8,  //21
+		State9,  //22
+		State91, //23
+		State92, //24
+		State95,
 		//StateFinal, //21
-		StateFail, //22
+		StateFail, //25
 	};
 
 int isNumber(char c){
@@ -101,6 +106,12 @@ int automate(char command[]){
 				}
 				else if(isLetter(command[i])){
 					curState = State51;
+				}
+				else if(command[i] == '.'){
+					curState = State9;
+				}
+				else if(command[i] == '$'){
+					curState = State95;
 				}
 				else{
 					curState = StateFail;
@@ -193,8 +204,41 @@ int automate(char command[]){
 				if(command[i] == ' '){
 					curState = State2;
 				}
+				else if(command[i] == '/'){
+					curState = State52;
+				}
 				else if(isLetter(command[i])){
 					curState = State51;
+				}
+				else if(command[i] == '.'){
+					curState = State53;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State52:
+				if(isLetter(command[i])){
+					curState = State52;
+				}
+				else if(command[i] == '.'){
+					curState = State53;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State53:
+				if(isLetter(command[i])){
+					curState = State53;
+				}
+				else if(command[i] == ' '){
+					curState = State2;
+				}
+				else{
+					curState = StateFail;
 				}
 				break;
 
@@ -202,7 +246,13 @@ int automate(char command[]){
 				if(command[i] == '.'){
 					curState = State8;
 				}
-				else if(isLetter(command[i]) == 0){
+				else if(command[i] == '/'){
+					printf("aa");
+				}
+				else if(isLetter(command[i])){
+					curState = State6;
+				}
+				else{
 					curState = StateFail;
 				}
 				break;
@@ -270,13 +320,72 @@ int automate(char command[]){
 				if(isLetter(command[i]) == 0){
 					curState = StateFail;
 				}
+				break;
+
+			case State9:
+				if(command[i] == '.'){
+					curState = State91;
+				}
+				else if(command[i] == '/'){
+					curState = State92;
+				}
+				else if(command[i] == ' '){
+					curState = State2;
+				}
+				else if(isLetter(command[i])){
+					curState = State2;
+				}
+				else{
+					curState = StateFail;
+				}
 				break;	
+
+			case State91:
+				if(command[i] == '/'){
+					curState = State92;
+				}
+				else if(command[i] == ' '){
+					curState = State2;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
+
+			case State92:
+				if(command[i] == ' '){
+					curState = State2;
+				}
+				else if(isLetter(command[i])){
+					curState = State51;
+				}
+				else{
+					curState = StateFail;
+				}
+
+				break;
+
+			case State95:
+				if(isLetter(command[i])){
+					curState = State51;
+				}
+				else{
+					curState = StateFail;
+				}
+				break;
 
 			case StateFail:
 				printf("La commande n'est pas correcte \n");
 				return 0;
 				break;
 		}
+		printf("%d ", curState);
 	}
+	printf("la commande fonctionne");
 	return 1;
+}
+
+int main(void){
+
+	automate("echo $PATH/grosseteub");
 }

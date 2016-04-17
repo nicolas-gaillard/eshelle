@@ -32,3 +32,4 @@ void orExecute(char** commands[], int position, int inFD);
 void execute(char** commands[], int position, int inFD);
 void outExecute(char** commands[], int position, int inFD);
 void outSimpleExecute(char** commands[], int position, int inFD);
+void execute(char** commands[], int position, int inFD);

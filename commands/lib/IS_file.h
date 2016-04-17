@@ -1,6 +1,7 @@
 #ifndef _ISFILE_H
 #define _ISFILE_H 1
 
+#include <sys/stat.h>
 struct stat sts;  
 
 /*

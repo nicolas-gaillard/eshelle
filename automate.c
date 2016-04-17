@@ -247,7 +247,6 @@ int automate(char command[]){
 					curState = State8;
 				}
 				else if(command[i] == '/'){
-					printf("aa");
 				}
 				else if(isLetter(command[i])){
 					curState = State6;
@@ -379,8 +378,6 @@ int automate(char command[]){
 				return 0;
 				break;
 		}
-		printf("%d ", curState);
 	}
-	printf("la commande fonctionne");
 	return 1;
 }

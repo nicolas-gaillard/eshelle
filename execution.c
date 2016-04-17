@@ -15,7 +15,7 @@ static char *redirections[NUMBER_REDIRECTION] =
 {"<", ">", ">>", "<<", "&&", "||", "|"};
 
 
-
+// Function which clean a String from fgets()
 void clean(const char *buffer, FILE *fp){
     char *p = strchr(buffer,'\n');
     if (p != NULL)
@@ -28,24 +28,19 @@ void clean(const char *buffer, FILE *fp){
     }
 }
 
+// Function which is used to know which redirection we have to apply during the execution
 int whatsThisRedirection(char *arg[]){
 	if (strcmp(arg[0],">") == 0){
-		//freopen(arg[1], "w", stdout);
 		return SIMPLE_OUT_REDIRECTION;
 	}
 	else if (strcmp(arg[0], ">>") == 0){
-		//freopen(arg[1], "a", stdout);
 		return OUT_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<") == 0){
-		//freopen(arg[1], "r", stdin);
 		return  IN_REDIRECTION;
 	}
 	else if (strcmp(arg[0], "<<") == 0){
 		return HERE_COMMANDS;
-		// On écrit notre truc dans un fichier tant qu'on a pas le delimiter
-		// Une fois le delimiter coupé,
-		// On ouvre le fichier en reading
 	}
 	else if (strcmp(arg[0], "|") == 0){
 		return PIPE;
@@ -74,13 +69,9 @@ int exist(char *cmd, char *functions[]){
 
 // This function will close a descriptor 
 void closePipe(int closed){
-	//do{
-		// Closing failed
 		if (close(closed) != 0){
 			perror("Closing failed ");
 		}
-	//}
-	//while(0);
 }
 
 // This function move the old file descriptor into the new
@@ -111,7 +102,7 @@ int hereCommands(char* redirection[]){
 		if (strcmp(buffer, redirection[1]) == 0){
    			break;
    		}
-   		// clean() removes \n, we have to add it to have a good display
+   		// clean() removes \n, we have to add it again to have a good display
    		strcat(buffer, "\n");
    		fputs(buffer, tmp);
 	}
@@ -122,7 +113,10 @@ int hereCommands(char* redirection[]){
 }
 
 void hereExecute(char** commands[], int position){
+	// We get back datas from the user and put them in a file descriptor
 	int in = hereCommands(commands[position+1]);
+
+	// Then we execute the command like always
 
 	// Creation of a pipe
 	int pipeFD[2];
@@ -137,8 +131,10 @@ void hereExecute(char** commands[], int position){
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
+		// we plug the file descriptor into the entrance of the command
 		redirectFD(in, STDIN_FILENO);
 
+		// If there is no command after this one, we display the result on the screen 
 		if (commands[position+2] != NULL){
 			redirectFD(pipeFD[1], STDOUT_FILENO);
 		}
@@ -171,6 +167,7 @@ void pipeExecute(char** commands[], int position, int inFD){
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
+		// We plug the "out" of the last command into the entrance of this one
 		redirectFD(inFD, STDIN_FILENO);
 		redirectFD(pipeFD[1], STDOUT_FILENO);
 		execvp(commands[position][0], commands[position]);
@@ -187,7 +184,7 @@ void pipeExecute(char** commands[], int position, int inFD){
 
 // >
 void outSimpleExecute(char** commands[], int position, int inFD){
-	// We can replace F_OK by W_OK to check if we can write in the file ???
+	// We can replace F_OK by W_OK to check if we can write in the file
 	if (access(commands[position+1][1], F_OK) != -1){
 		// The file exists, we remove it 
 		unlink(commands[position+1][1]);
@@ -218,16 +215,18 @@ void outExecute(char** commands[], int position, int inFD){
 		if ((fdOUT = open(commands[position+1][1], O_RDWR|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR)) == -1){
 			perror("Can't open the file ");
 		}
-		// We 
+		// We plug the file descriptor into the exit of this command
 		redirectFD(fdOUT, STDOUT_FILENO);
+		// We execute the command
 		execvp(commands[position][0], commands[position]);
 		perror("exec failed ");
 		redirectFD(pipeFD[1], STDOUT_FILENO);
+
+		// If a file was opened, we close it
 		if (fdOUT != -1){
 			close(fdOUT);
 		}
 
-		// Then we
 	}
 	// Parent process
 	else{
@@ -241,6 +240,7 @@ void outExecute(char** commands[], int position, int inFD){
 // <
 void inExecute(char** commands[], int position){
 	int fdIN;
+	// We open the file :
 	if ((fdIN = open(commands[position+1][1], O_RDONLY)) == -1){
 		perror("Can't open the file ");
 		// ????
@@ -260,12 +260,15 @@ void inExecute(char** commands[], int position){
 	// Child process :
 	if (pid == 0){
 		closePipe(pipeFD[0]);
+		// We plug the file descriptor into the entrance of this command
 		redirectFD(fdIN, STDIN_FILENO);
 
+		// If there is no command after this one, we display the result on the screen 
 		if (commands[position+2] != NULL){
 			redirectFD(pipeFD[1], STDOUT_FILENO);
 		}
 
+		// We execute the command
 		execvp(commands[position][0], commands[position]);
 		perror("exec failed ");
 	}
@@ -296,6 +299,8 @@ void andExecute(char** commands[], int position, int inFD){
 	if (pid == 0){
 		closePipe(pipeFD[0]);
 		redirectFD(inFD, STDIN_FILENO);
+
+		// If there is no command after this one, we display the result on the screen 
 		if (commands[position+2] != NULL){
 			redirectFD(pipeFD[1], STDOUT_FILENO);
 		}
@@ -344,6 +349,8 @@ void orExecute(char** commands[], int position, int inFD){
 	if (pid == 0){
 		closePipe(pipeFD[0]);
 		redirectFD(inFD, STDIN_FILENO);
+		
+		// If there is no command after this one, we display the result on the screen 
 		if (commands[position+2] != NULL){
 			redirectFD(pipeFD[1], STDOUT_FILENO);
 		}

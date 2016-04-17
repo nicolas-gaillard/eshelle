@@ -5,7 +5,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 
-
+#include "shell.h"
 #include "automate.h"
 #include "decoupe.h"
 #include "execution.h"
@@ -14,12 +14,12 @@
 #define BUFFER 50
 #define NUMBER_FONCTIONS 18
 
-/*
-shebang : #! puis script, permet de lancer un script
-*/
 
+// Function to know if we have to execute the command in background
 int background(char** cmd[], int size){
+	// If the last char is '&'
 	if (strcmp(cmd[size - 1][0], "&")==0){
+		// We set it to NULL not to interprete it during the execution
 		cmd[size - 1] = NULL;
 		return 1;
 	}
@@ -27,17 +27,6 @@ int background(char** cmd[], int size){
 		return 0;
 	}
 }
-
-/*
-Plus propre : 
-tu fork
-dans le fils tu fais exécuter le programme
-tu stockes le pid du fils dans le père
-tu fous un pthread pour faire un waitpid avec le pid du fils
-des que le fils termine, il balance l'exitcode dans le waitpid du pthread
-et à chaque commande dans ton shell tu check l'ensemble de tes programmes en bg, si y'en a un qui est terminé tu balances un affichage comme ça [iddubg] (EXITCODE) ...
-Et tu l'enlèves de la liste des procs en bg
-*/
 
 void clear(){
   printf("\033c");
@@ -82,20 +71,6 @@ void prompt(char *currentDir, char *hostName){
 
 	fflush(stdout);
 }
-
-/*
-int exist(char *c, char *t[]){
-	for (int i = 0; i < NUMBER_FONCTIONS; ++i)
-	{
-		if (t[i] == c){
-			return 1;
-		}
-	}
-	return 0;
-}
-*/
-
-// FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
 
 int main(int argc, char const *argv[]) {
 	
@@ -147,6 +122,7 @@ int main(int argc, char const *argv[]) {
 					// Child process will execute in background
 					if (pid == 0){
 						execute((char***)command, 0, STDIN_FILENO);
+						exit(1);
     				}
     			}
     			else {
@@ -168,16 +144,6 @@ int main(int argc, char const *argv[]) {
     		}
 
     	}
-  
-    	// strtok(chaine, mot) pour supprimer les "mot" d'une chaine de caractère
-
-/*
-    	// Checking the command :
-    	else if (exist(command, functions) == 0){
-    		// The command doesn't exist
-    		perror("The command doesn't exist ");
-    	   	exit(0);
-*/
 	}
 
 	return 0;

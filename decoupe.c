@@ -48,8 +48,6 @@ char **str_split (char *s, const char *ct){
 
 
 char*** decoupe(char *command, int* size){
-	//char tab[SIZE_CUTTING][SIZE_CUTTING][SIZE_CUTTING];
-
 	int m,l;
 
 	char *** tab = malloc(sizeof(char**)*SIZE_CUTTING);
@@ -67,7 +65,6 @@ char*** decoupe(char *command, int* size){
 	k=0;
  	j=0;
 
- 	//char *decoupe[SIZE_CUTTING];
  	char **t = NULL;
 	t = str_split(command, " ");
 
@@ -92,7 +89,6 @@ char*** decoupe(char *command, int* size){
 			strcpy(tab[j][k], t[i]);
 			k++;
 		}
-		//printf("%s\n", t[i]);
 		i++;
 	}
 	tab[j][k] = NULL;

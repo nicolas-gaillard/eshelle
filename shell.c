@@ -107,7 +107,10 @@ int main(int argc, char const *argv[]) {
 	// Clear the terminal 
 	clear();
 	
-	char PATH[]="/home/ubuntu/workspace/commands/bin/";
+	getcwd(currentDir,BUFFER*sizeof(char));
+	char PATH[]="";
+	strcat(PATH,currentDir);
+	strcat(PATH,"/commands/bin/");
 	setenv("PATH",PATH,1);
 
 	//setenv("PS1","user@hote:currentdirectory$ ",1);

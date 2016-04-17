@@ -384,8 +384,3 @@ int automate(char command[]){
 	printf("la commande fonctionne");
 	return 1;
 }
-
-int main(void){
-
-	automate("echo $PATH/grosseteub");
-}

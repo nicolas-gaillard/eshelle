@@ -4,7 +4,7 @@ STAT=./commands/src/statlib
 DYNA=./commands/src/dynalib
 BIN=./commands/bin
 LIB=./commands/lib
-MAIN=shell#NOM DU FICHIER A DEFINIR
+MAIN=shell
 
 all: independance statique dynamique shell_statique shell_dynamique clean
 
@@ -33,7 +33,7 @@ inde: inde.o
 # Compilation en librairie statique intégré à l'exécutable
 statique : stat clean
 
-stat : stat.o
+stat : stat.o clean
 	ar crs $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	ranlib $(LIB)/libcommands.a
 	
@@ -48,19 +48,19 @@ dyna: dyna.o
 shell_independance : independance she_inde clean
 
 she_inde :
-	gcc -o $(BIN)/$(MAIN)INDE shell.c execution.c decoupe.c automate.c
+	gcc -o $(MAIN)INDE shell.c execution.c decoupe.c automate.c
 
 #Compilation du shell en librairie statique
 shell_statique : statique she_stat clean
 
 she_stat :
-	gcc -I$(LIB) -L$(LIB) -o $(BIN)/$(MAIN)STAT shell.c  execution.c decoupe.c automate.c -lcommands
+	gcc -I$(LIB) -L$(LIB) -o $(MAIN)STAT shell.c  execution.c decoupe.c automate.c -lcommands
 
 #Compilation du shell en librairie dynamique
 shell_dynamique : dynamique she_dyna clean
 
 she_dyna:
-	gcc -o $(BIN)/$(MAIN)DYNA shell.c  execution.c decoupe.c automate.c /usr/lib/libcommands.so
+	gcc -o $(MAIN)DYNA shell.c  execution.c decoupe.c automate.c /usr/lib/libcommands.so
 
 inde.o :
 	gcc -c $(COMPI)/IS_file.c

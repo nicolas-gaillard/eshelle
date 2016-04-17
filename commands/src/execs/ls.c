@@ -124,7 +124,7 @@ int main(int argc,char *argv[]){
 		}
 		while((dptr=readdir(dirp))){
 	    	// If option "-a" is not required we ignore the "." and ".." directories
-			if(aflag==0) if (!strcmp(dptr->d_name,".") || !strcmp(dptr->d_name,"..")) continue;
+			if(aflag==0) if(dptr->d_name[0]=='.') continue;
 	    	// If option "-l" is required we display the advanced information of the content file/directory
 	    	if(lflag==1){
 	    		advancedDisplay(dptr,dflag);

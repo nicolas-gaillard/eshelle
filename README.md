@@ -1,9 +1,10 @@
-/============================== ****Projet eshelle**** ===============================/
-####/*************** Membres du groupe *******************/
-        BLOUIN Jordan
-        BOUCHEVREAU Valentin
-        GAILLARD Nicolas
-        LEVAVASSEUR Quentin
+/============================== ***Projet eshelle*** ===============================/
+<!-- -->
+/*************** Membres du groupe *******************/
+    BLOUIN Jordan<!-- -->
+    BOUCHEVREAU Valentin<!-- -->
+    GAILLARD Nicolas<!-- -->
+    LEVAVASSEUR Quentin<!-- -->
 <!-- -->
 Commandes Makefile :
 
@@ -32,5 +33,7 @@ Commandes Makefile :
             $ make all
 <!-- -->
 Les fichiers sources des commandes se situent dans  ./commands/src
+<!-- -->
 Les exécutables des commandes se situent dans       ./commands/bin
+<!-- -->
 Les librairies des commandes se situent dans        ./commands/lib

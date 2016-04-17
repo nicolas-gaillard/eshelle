@@ -32,9 +32,7 @@ int main(int argc,char *argv[]){
 	else{
 		// We change the repertory or an error will be displayed if it doesn't exist
 		if(isFolder(argv[1])){
-			printf("cd : Test : Repertoire courant avant : %s\n",get_current_dir_name());
 			chdir(argv[1]);
-			printf("cd : Test : Repertoire courant apr�s : %s\n",get_current_dir_name());
 		}
 		else{
 			printf("cd : directory %s doesn't exist\n",argv[1]);

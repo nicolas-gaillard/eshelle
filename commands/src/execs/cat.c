@@ -47,7 +47,7 @@ int main(int argc,char *argv[]){
 		for (index = optind; index < argc; index++){
 			// If the argument is a regular file we display it or an error will be displayed
 			if(isRegularFile(argv[index])){
-				if(pFile=fopen(argv[index],"rt")){
+				if((pFile=fopen(argv[index],"rt"))){
 					// If option "-n" is required we display lines numbers before the content
 					if(nflag==1){
 						int numLigne=1;

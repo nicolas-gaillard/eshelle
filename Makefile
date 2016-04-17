@@ -33,7 +33,7 @@ inde: inde.o
 # Compilation en librairie statique intégré à l'exécutable
 statique : stat clean
 
-stat : stat.o clean
+stat : stat.o
 	ar crs $(LIB)/libcommands.a ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	ranlib $(LIB)/libcommands.a
 	
@@ -41,7 +41,7 @@ stat : stat.o clean
 dynamique: dyna clean
 
 dyna: dyna.o
-	sudo gcc -shared -o /usr/lib/libcommands.so cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
+	sudo gcc -shared -o /usr/lib/libcommands.so ls.o cat.o cd.o mkdir.o pwd.o du.o rm.o mv.o cp.o chmod.o chown.o chgrp.o echo.o IS_file.o
 	sudo cp -f /usr/lib/libcommands.so $(LIB)
 
 #Compilation du shell avec un exécutable par fichier source
@@ -60,7 +60,7 @@ she_stat :
 shell_dynamique : dynamique she_dyna clean
 
 she_dyna:
-	gcc -o $(MAIN)DYNA shell.c  execution.c decoupe.c automate.c /usr/lib/libcommands.so
+	gcc -o $(MAIN)DYNA shell.c execution.c decoupe.c automate.c /usr/lib/libcommands.so
 
 inde.o :
 	gcc -c $(COMPI)/IS_file.c

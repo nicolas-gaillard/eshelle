@@ -3,9 +3,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <signal.h>
 
-#include "shell.h"
+
 #include "automate.h"
 #include "decoupe.h"
 #include "execution.h"
@@ -14,12 +15,12 @@
 #define BUFFER 50
 #define NUMBER_FONCTIONS 18
 
+/*
+shebang : #! puis script, permet de lancer un script
+*/
 
-// Function to know if we have to execute the command in background
 int background(char** cmd[], int size){
-	// If the last char is '&'
 	if (strcmp(cmd[size - 1][0], "&")==0){
-		// We set it to NULL not to interprete it during the execution
 		cmd[size - 1] = NULL;
 		return 1;
 	}
@@ -27,6 +28,17 @@ int background(char** cmd[], int size){
 		return 0;
 	}
 }
+
+/*
+Plus propre : 
+tu fork
+dans le fils tu fais exécuter le programme
+tu stockes le pid du fils dans le père
+tu fous un pthread pour faire un waitpid avec le pid du fils
+des que le fils termine, il balance l'exitcode dans le waitpid du pthread
+et à chaque commande dans ton shell tu check l'ensemble de tes programmes en bg, si y'en a un qui est terminé tu balances un affichage comme ça [iddubg] (EXITCODE) ...
+Et tu l'enlèves de la liste des procs en bg
+*/
 
 void clear(){
   printf("\033c");
@@ -38,7 +50,7 @@ void prompt(char *currentDir, char *hostName){
 
 	// username@nameofthemachine:currentdirectory
 
-	getcwd(currentDir,sizeof(currentDir));
+	getcwd(currentDir,BUFFER*sizeof(char));
 	gethostname(hostName, sizeof(hostName));
 
 	// strcmp(currentDir,"") == *currentDir == NULL;	
@@ -51,7 +63,7 @@ void prompt(char *currentDir, char *hostName){
 
 	}
 	else if (strcmp(hostName,"") == 0){
-		printf("%s@bash:%s$ ", getlogin(), currentDir);	
+		printf("%s@bash:%s$ ", getlogin(),currentDir);	
 	}
 	else {
 		printf("%s@%s:%s$ ", getlogin(), hostName, currentDir);
@@ -72,28 +84,41 @@ void prompt(char *currentDir, char *hostName){
 	fflush(stdout);
 }
 
+/*
+int exist(char *c, char *t[]){
+	for (int i = 0; i < NUMBER_FONCTIONS; ++i)
+	{
+		if (t[i] == c){
+			return 1;
+		}
+	}
+	return 0;
+}
+*/
+
+// FILE  *freopen  (const  char *path, const char *mode, FILE *stream);
+
 int main(int argc, char const *argv[]) {
 	
 	char currentDir[BUFFER];
 	char keyboarding[BUFFER_KEYBOARDING] = "";
 	char hostName[BUFFER];
-
+	
 	// Clear the terminal 
 	clear();
 	
-	char PATH[]="./commands/execs/:";
-	strcat(PATH,getenv("PATH"));
+	char PATH[]="/home/ubuntu/workspace/commands/bin/";
 	setenv("PATH",PATH,1);
 
-	setenv("PS1","user@hote:currentdirectory$ ",1);
+	//setenv("PS1","user@hote:currentdirectory$ ",1);
 	
 	// Welcome message
 	printf("Shell v1.0 \nEnter \"quit\" to leave\n");
 
 	while(1){
 		// Display the prompt :
-		//prompt(currentDir, hostName);
-		printf("%s",getenv("PS1"));
+		prompt(currentDir, hostName);
+		//printf("%s",getenv("PS1"));
 	
 		// Listenning the command :
 		fgets(keyboarding, sizeof(keyboarding), stdin);
@@ -112,38 +137,50 @@ int main(int argc, char const *argv[]) {
     			int size;
     			// We cut the command
     			char *** command = decoupe(keyboarding, &size);
-    			// If the command has to be executed in background :$
-				if (background(command, size) == 1){
-					int pid;
-					if ((pid = fork()) == -1){
-						perror("fork failed ");
+    			
+    			if(strcmp(command[0][0],"cd")==0){
+    				struct stat sts;
+    				if(command[0][1]!=NULL && stat(command[0][1],&sts)==0 && S_ISDIR(sts.st_mode)){
+						chdir(command[0][1]);
 					}
-
-					// Child process will execute in background
-					if (pid == 0){
-						execute((char***)command, 0, STDIN_FILENO);
-						exit(1);
-    				}
-    			}
-    			else {
-    				int pid;
-					if ((pid = fork()) == -1){
-						perror("fork failed ");
+					else{
+						printf("cd : directory %s doesn't exist\n",command[0][1]);
 					}
-
-					// Child process will execute in background
-					if (pid == 0){
-						execute((char***)command, 0, STDIN_FILENO);
-    				}
-    				else{
-    					wait(NULL);
-    				}
     			}
-
+    			else{
+    				// If the command has to be executed in background :$
+					if (background(command, size) == 1){
+						int pid;
+						if ((pid = fork()) == -1){
+							perror("fork failed ");
+						}
+	
+						// Child process will execute in background
+						if (pid == 0){
+							execute((char***)command, 0, STDIN_FILENO);
+	    				}
+	    			}
+	    			else {
+	    				int pid;
+						if ((pid = fork()) == -1){
+							perror("fork failed ");
+						}
+	
+						// Child process will execute in background
+						if (pid == 0){
+							execute((char***)command, 0, STDIN_FILENO);
+	    				}
+	    				else{
+	    					wait(NULL);
+	    				}
+	    			}
+    			}
+    			
     			free(command);
     		}
 
     	}
+    	
 	}
 
 	return 0;
